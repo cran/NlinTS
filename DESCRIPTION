@@ -1,0 +1,20 @@
+Package: NlinTS
+Type: Package
+Title: Non Linear Time Series Analysis
+Version: 1.0
+Date: 2018-02-22
+Authors@R: c(person("Youssef", "Hmamouche", role = c("aut", "cre"), email = "hmamoucheyussef@gmail.com"), person("Sylvain", "Barthelemy", role = c("cph"), email = "sylbarth@gmail.com"))
+Maintainer: Youssef Hmamouche <hmamoucheyussef@gmail.com>
+Description: The main functionalities of this package are about time series forecasting and causality detection.  In particular, it provides a neural network Vector Auto-Regressive, the classical Granger causality test C.W.J.Granger (1980) <doi:10.1016/0165-1889(80)90069-X>,  and  a non-linear version of it.
+License: GNU General Public License
+Depends: Rcpp
+Imports: methods, timeSeries
+LinkingTo: Rcpp
+SystemRequirements: C++11
+NeedsCompilation: yes
+RoxygenNote: 6.0.1
+Packaged: 2018-02-23 11:03:47 UTC; youssef
+Author: Youssef Hmamouche [aut, cre],
+  Sylvain Barthelemy [cph]
+Repository: CRAN
+Date/Publication: 2018-02-23 11:24:53 UTC
