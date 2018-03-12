@@ -34,7 +34,7 @@ F-test (): returns the value of the test
 A non linear Granger causality test
 }
 \details{
-The test evaluates if the second time series causes the first one using a non-linear approach. The test evaluates two artificial neural network busing VARMLP model.
+The test evaluates if the second time series causes the first one. Two MLP artificial neural networks are evaluated to perform the test, one using just the target time series (ts1), and the second using both time series.
 }
 \examples{
 library (timeSeries) # to extract time series

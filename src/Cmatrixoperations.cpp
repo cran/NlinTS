@@ -25,13 +25,9 @@ bool regression (const CMatDouble & Mn, const CVDouble & Y,  CVDouble & pBeta ) 
     
     MultCVDouble (Trans (M), M, B);
     
-    /*try {
-    
-    } catch (const Exception & e)
-    {*/
     test = Inverse (B , A);
-        if (!test)
-             return 0;
+    if (!test)
+        return 0;
     
     MultCVDouble (Trans (M), Y, Teta);
     MultCVDouble (A, Teta, Beta);
@@ -42,15 +38,11 @@ bool regression (const CMatDouble & Mn, const CVDouble & Y,  CVDouble & pBeta ) 
     B.clear();
     
     if (black_list.size () != 0)
-    {
         for (i = 0 ; i < black_list.size () ; ++i)
-        {
             pBeta[black_list[i]] = Beta[i];
-        }
-    }
     else
         pBeta = Beta;
-        Beta.clear();
+    Beta.clear();
     return 1;
 }
 /***********************************************************************************/
@@ -177,16 +169,13 @@ CVDouble VECbivar (CMatDouble  M, unsigned lag, bool d /* = false */) throw (Exc
     B.push_back (one);
     A.push_back (one);
     
-    
     pCible.resize (nbreCol);
-    
     
     for (auto vect:M)
     {
         P_Part (vect, Present, B, lag);
         Pr_Part (vect, A, lag);
     }
-    
     
     for (i = 0 ; i < nbreCol ; ++i)
     {

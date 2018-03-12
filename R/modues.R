@@ -4,16 +4,16 @@ library (Rcpp)
 }
 
 
-#' VARMLP model
+#' Artificial Neural Network VAR (Vector Auto-Regressive) model using a MultiLayer Perceptron.
 #'
-#' @details This function construct the VAR-MLP model (vector autoregressive based on a multilayer perceptron network).
+#' @details This function constructs the model.
 #' @param df A numerical dataframe
-#' @param sizeOfHLayers Integer vector that contains the size of hidden layers (the number of hidden layers is the size of this vector).
+#' @param sizeOfHLayers Integer vector that contains the size of hidden layers (the number of hidden layers is the size of this vector)
 #' @param lag The lag parameter
 #' @param iters The number of iterations
 #' @param bias Logical, true if the bias have to be used in the network
-#' @return train (df):  update the model based on input dataframe
-#' @return forecast (df):  forecast next row of an input dataframe
+#' @return train (df):  updates the model using the input dataframe df
+#' @return forecast (df):  returns the next row forecasts of an given dataframe df
 #' @examples
 #' library (timeSeries) # to extract time series
 #' library (NlinTS)
@@ -34,36 +34,25 @@ varmlp <- function(df, lag, sizeOfHLayers, iters, bias = TRUE){
     return (v)
 }
 
-#' Augmented Dickey_Fuller test
-#'
-#' @details Computes the stationarity test for a given univariate time series
-#' @param ts Numerical dataframe
-#' @param lag The lag parameter
-#' @return summary ():  shows the test results
-#' @return df (): returns the value of the test
-#' @examples
-#' library (timeSeries)
-#' library (NlinTS)
-#' #load data
-#' data = LPP2005REC
-#' model = df.test (data[,1], 1)
-#' model$summary ()
-df.test <- function(ts, lag){
-  DF.test =  Module ('DickeyFuller', PACKAGE = "NlinTS") ;
-  test = DF.test $ DickeyFuller ;
-  v = new(test, ts, lag) ;
-  return (v) ;
-}
 
 #' The Granger causality test
 #'
-#' @details The test evaluates if the second time series causes the first one using the Granger test of causality
+#' @details The test evaluates if the second time series causes the first one using the Granger test of causality.
 #' @param ts1 Numerical dataframe containing one variable
 #' @param ts2 Numerical dataframe containing one variable
 #' @param lag The lag parameter
 #' @param diff Logical argument for the option of making data stationary
 #' @return summary ():  shows the test results
 #' @return F-test (): returns the value of the test
+#' @references{
+#'   \insertRef{granger1980}{NlinTS}
+#' }
+#' @examples
+#' library (timeSeries) # to extract time series
+#' library (NlinTS)
+#' data = LPP2005REC
+#' model = causality.test (data[,1], data[,2], 2)
+#' model$summary ()
 causality.test <- function(ts1,ts2, lag, diff = FALSE){
     Caus.test =  Module ('CausalityTest', PACKAGE = "NlinTS")
     test0 = Caus.test $ CausalityTest ;
@@ -73,7 +62,7 @@ causality.test <- function(ts1,ts2, lag, diff = FALSE){
 
 #' A non linear Granger causality test
 #'
-#' @details The test evaluates if the second time series causes the first one using a non-linear approach. The test evaluates two artificial neural network busing VARMLP model.
+#' @details The test evaluates if the second time series causes the first one. Two MLP artificial neural networks are evaluated to perform the test, one using just the target time series (ts1), and the second using both time series.
 #' @param ts1 Numerical series
 #' @param ts2 Numerical series
 #' @param lag The lag parameter
@@ -97,5 +86,32 @@ nlin_causality.test <- function(ts1,ts2, lag,LayersUniv, LayersBiv, iters, bias=
     v = new (test0, ts1,ts2, lag, LayersUniv, LayersBiv, iters, bias) ;
     return (v) ;
 }
+
+
+#' Augmented Dickey_Fuller test
+#'
+#' @details Computes the stationarity test for a given univariate time series.
+#' @param ts Numerical dataframe
+#' @param lag The lag parameter
+#' @return summary ():  shows the test results
+#' @return df (): returns the value of the test
+#' @references{
+#'   \insertRef{elliott1992efficient}{NlinTS}
+#' }
+
+#' @examples
+#' library (timeSeries)
+#' library (NlinTS)
+#' #load data
+#' data = LPP2005REC
+#' model = df.test (data[,1], 1)
+#' model$summary ()
+df.test <- function(ts, lag){
+    DF.test =  Module ('DickeyFuller', PACKAGE = "NlinTS") ;
+    test = DF.test $ DickeyFuller ;
+    v = new(test, ts, lag) ;
+    return (v) ;
+}
+
 
 

@@ -24,5 +24,17 @@ F-test (): returns the value of the test
 The Granger causality test
 }
 \details{
-The test evaluates if the second time series causes the first one using the Granger test of causality
+The test evaluates if the second time series causes the first one using the Granger test of causality.
+}
+\examples{
+library (timeSeries) # to extract time series
+library (NlinTS)
+data = LPP2005REC
+model = causality.test (data[,1], data[,2], 2)
+model$summary ()
+}
+\references{
+{
+  \insertRef{granger1980}{NlinTS}
+}
 }

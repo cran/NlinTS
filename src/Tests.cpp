@@ -72,24 +72,20 @@ DickeyFuller::DickeyFuller (const Rcpp::NumericVector & tS_, int lag_) throw ()
     
     Stdv_Value = sqrt(Stdv_Value * Var[1][1] / (B[0].size () - B.size ()));
     
-    SBC = nl * log(SSE / nl) + (lag+3) * log(nl);
+    SBC = nl * log(SSE / nl) + (lag + 3) * log (nl);
     //SBC = Stdv_Value;
     df = pBeta[1] / Stdv_Value;
-    testResult = "The value of the test is: " + to_string (df);
 };
 /*******************/
 DickeyFuller::DickeyFuller (const Struct::CVDouble & tS_, int lag_ ) throw ()
 {
     // Checking if the lag value is positif
-
     if (lag_ <= 0)
         throw Exception("The lag value is incorrect, try strictly positive value.");
-
     
     lag  = lag_;
     
     // Initialisation
-    
     Struct::CVDouble one, pBeta, predicted, tStat (tS_), errorCorrection, trend, errorCor;
     Struct::CMatDouble B, target, Var;
     
@@ -135,8 +131,20 @@ DickeyFuller::DickeyFuller (const Struct::CVDouble & tS_, int lag_ ) throw ()
     SBC = nl * log(SSE / nl) + (lag+3) * log(nl);
     //SBC = Stdv_Value;
     df = pBeta[1] / Stdv_Value;
-    //testResult = "The value of the test is: " + to_string (df);
 };
+/***************************************************/
+void DickeyFuller::summary ()
+{
+    Rcpp::Rcout <<  "------------------------------------------------\n";
+    Rcpp::Rcout <<  "         The Augmented Dickey-Fuller test       \n";
+    Rcpp::Rcout <<  "------------------------------------------------\n";
+    Rcpp::Rcout <<  "The lag parameter: p = "<< lag << "\n";
+    Rcpp::Rcout <<  "Critical values: 1% \t 5% \n";
+    Rcpp::Rcout <<  "                "<< get1CriticalValue () << "\t" << get5CriticalValue ()<< "\n";
+    Rcpp::Rcout <<  "The statistic of the test: "<< df << "\n";
+    Rcpp::Rcout <<  "------------------------------------------------\n";
+};
+
 /***************************************************/
 int order (const Struct::CVDouble & tS, int p) {
     int res = 0;

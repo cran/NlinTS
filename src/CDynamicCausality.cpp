@@ -53,11 +53,9 @@ DynamicCausalityTest::DynamicCausalityTest (Rcpp::NumericVector  ts1_,
             throw string ("Error: The variables have not the same size");
     
     // Size of hidden layers
-    
     vector<int> sizeOfLayersModel1_ = Rcpp::as < vector<int>  > (hiddenLayersOfUnivModel);
     vector<int> sizeOfLayersModel2_ = Rcpp::as < vector<int>  > (hiddenLayersOfBivModel);
                           
-    
     // variables
     unsigned nl (ts1.size ());
     double RSS1(0), RSS0(0);
@@ -97,9 +95,9 @@ DynamicCausalityTest::DynamicCausalityTest (Rcpp::NumericVector  ts1_,
 }
 void DynamicCausalityTest::summary ()
 {
-    Rcpp::Rcout <<  "------------------------------------------------\n";
-    Rcpp::Rcout <<  "         Non linear test of granger causality" << "\n";
-    Rcpp::Rcout <<  "------------------------------------------------\n";
+    Rcpp::Rcout <<  "---------------------------------------------------------\n";
+    Rcpp::Rcout <<  "         Results of the non-linear Granger causality test" << "\n";
+    Rcpp::Rcout <<  "---------------------------------------------------------\n";
     Rcpp::Rcout <<  "The lag parameter: p = "<< lag << "\n";
     Rcpp::Rcout <<  "The value of the F-test: "<< Ftest << "\n";
     Rcpp::Rcout <<  "The p_value of the F-test: "<< p_value << "\n";

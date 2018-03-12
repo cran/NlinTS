@@ -94,7 +94,6 @@ CMatDouble CNeuralNVarModel::forecast (const Struct::CMatDouble & M)
     
     CMatDouble minMax;
  
-    
     minMax = Res.Normalise ();
     
     if (Res.size () == Nb_Cl and Res[0].size () >= lag)

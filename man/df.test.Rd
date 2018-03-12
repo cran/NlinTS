@@ -20,7 +20,7 @@ df (): returns the value of the test
 Augmented Dickey_Fuller test
 }
 \details{
-Computes the stationarity test for a given univariate time series
+Computes the stationarity test for a given univariate time series.
 }
 \examples{
 library (timeSeries)
@@ -29,4 +29,9 @@ library (NlinTS)
 data = LPP2005REC
 model = df.test (data[,1], 1)
 model$summary ()
+}
+\references{
+{
+  \insertRef{elliott1992efficient}{NlinTS}
+}
 }

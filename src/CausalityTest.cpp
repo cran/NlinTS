@@ -78,12 +78,6 @@ void CausalityTest::summary ()
     Rcpp::Rcout <<  "The value of the F-test: "<< Ftest << "\n";
     Rcpp::Rcout <<  "The p_value of the F-test: "<< p_value << "\n";
     Rcpp::Rcout <<  "The critical value with 5% of risk:: "<< criticTest <<"\n";
-    
-    /*if (Ftest > criticTest)
-        std::cout <<  "----------> There is causality \n";
-    else
-        std::cout <<  "----------> There is no causality \n";
-    std::cout <<  "------------------------------------------------"<< "\n";*/
 }
 double CausalityTest::get_p_value () {
     return p_value;

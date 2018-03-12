@@ -2,7 +2,7 @@
 % Please edit documentation in R/modues.R
 \name{varmlp}
 \alias{varmlp}
-\title{VARMLP model}
+\title{Artificial Neural Network VAR (Vector Auto-Regressive) model using a MultiLayer Perceptron.}
 \usage{
 varmlp(df, lag, sizeOfHLayers, iters, bias = TRUE)
 }
@@ -11,22 +11,22 @@ varmlp(df, lag, sizeOfHLayers, iters, bias = TRUE)
 
 \item{lag}{The lag parameter}
 
-\item{sizeOfHLayers}{Integer vector that contains the size of hidden layers (the number of hidden layers is the size of this vector).}
+\item{sizeOfHLayers}{Integer vector that contains the size of hidden layers (the number of hidden layers is the size of this vector)}
 
 \item{iters}{The number of iterations}
 
 \item{bias}{Logical, true if the bias have to be used in the network}
 }
 \value{
-train (df):  update the model based on input dataframe
+train (df):  updates the model using the input dataframe df
 
-forecast (df):  forecast next row of an input dataframe
+forecast (df):  returns the next row forecasts of an given dataframe df
 }
 \description{
-VARMLP model
+Artificial Neural Network VAR (Vector Auto-Regressive) model using a MultiLayer Perceptron.
 }
 \details{
-This function construct the VAR-MLP model (vector autoregressive based on a multilayer perceptron network).
+This function constructs the model.
 }
 \examples{
 library (timeSeries) # to extract time series

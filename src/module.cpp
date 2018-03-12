@@ -34,7 +34,6 @@ RCPP_MODULE (DickeyFuller) {
   class_<DickeyFuller> ("DickeyFuller")
         .constructor <Rcpp::NumericVector, int> ()
         .method ("summary", &DickeyFuller::summary, "Summary of the test")
-        .property ("pvalue", &DickeyFuller::get_p_value, "return the pvalue of the test")
         .property ("df", &DickeyFuller::getDF, "return the value of test");
 }
 RCPP_MODULE (CausalityTest) {
