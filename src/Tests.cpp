@@ -34,7 +34,8 @@ DickeyFuller::DickeyFuller (const Rcpp::NumericVector & tS_, int lag_) throw ()
         tS.push_back (val);
     
     // Initialisation
-    Struct::CVDouble one, pBeta, predicted, tStat (tS), errorCorrection, trend, errorCor;
+    Struct::CVDouble one, pBeta, predicted, tStat (tS), errorCorrection, trend;
+    //Struct::CVDouble errorCor;
     Struct::CMatDouble B, target, Var;
     
     // Differentiation
@@ -46,7 +47,7 @@ DickeyFuller::DickeyFuller (const Rcpp::NumericVector & tS_, int lag_) throw ()
     for (unsigned i = lag  ; i < nl ; i++) {
         one.push_back (1);
         errorCorrection.push_back (tS[i]);
-        errorCor.push_back (tStat[i+1]);
+        //errorCor.push_back (tStat[i+1]);
         trend.push_back (i);
     }
     
@@ -86,7 +87,7 @@ DickeyFuller::DickeyFuller (const Struct::CVDouble & tS_, int lag_ ) throw ()
     lag  = lag_;
     
     // Initialisation
-    Struct::CVDouble one, pBeta, predicted, tStat (tS_), errorCorrection, trend, errorCor;
+    Struct::CVDouble one, pBeta, predicted, tStat (tS_), errorCorrection, trend;
     Struct::CMatDouble B, target, Var;
     
     // 0 is the default argument attributed to the lag value length(tS)^1/3
@@ -102,10 +103,9 @@ DickeyFuller::DickeyFuller (const Struct::CVDouble & tS_, int lag_ ) throw ()
     for (unsigned i = lag  ; i < nl ; i++) {
         one.push_back (1);
         errorCorrection.push_back (tS_[i]);
-        errorCor.push_back (tStat[i+1]);
         trend.push_back (i);
     }
-    
+        
     B.push_back(one);
     B.push_back(errorCorrection);
     B.push_back(trend);
@@ -141,7 +141,7 @@ void DickeyFuller::summary ()
     Rcpp::Rcout <<  "The lag parameter: p = "<< lag << "\n";
     Rcpp::Rcout <<  "Critical values: 1% \t 5% \n";
     Rcpp::Rcout <<  "                "<< get1CriticalValue () << "\t" << get5CriticalValue ()<< "\n";
-    Rcpp::Rcout <<  "The statistic of the test: "<< df << "\n";
+    Rcpp::Rcout <<  "The statistic of the test is: "<< df << "\n";
     Rcpp::Rcout <<  "------------------------------------------------\n";
 };
 
@@ -150,7 +150,7 @@ int order (const Struct::CVDouble & tS, int p) {
     int res = 0;
     Struct::CVDouble serie (tS);
     DickeyFuller test (serie,p);
-    //test.summary();
+
     while (test.get5CriticalValue() <= test.getDF())
     {
         res += 1;

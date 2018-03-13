@@ -155,7 +155,7 @@ CVDouble VECbivar (CMatDouble  M, unsigned lag, bool d /* = false */) throw (Exc
                         }
                 }
         
-        // Nombre de lignes après différentiation
+        // Compute the number of lines after differentiation
         nlins = nbreLn - maxOrder;
     }
     else

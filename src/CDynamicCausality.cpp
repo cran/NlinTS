@@ -50,7 +50,7 @@ DynamicCausalityTest::DynamicCausalityTest (Rcpp::NumericVector  ts1_,
         ts2.push_back (val);
     
     if (ts1.size() != ts2.size())
-            throw string ("Error: The variables have not the same size");
+            throw string ("Error: The variables have not the same length.");
     
     // Size of hidden layers
     vector<int> sizeOfLayersModel1_ = Rcpp::as < vector<int>  > (hiddenLayersOfUnivModel);
