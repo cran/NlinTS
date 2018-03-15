@@ -1,7 +1,7 @@
-a72788b1a59c50e6dd2523f5f01a6891 *DESCRIPTION
+9f930a875db2486fc4b14e1af6d98e66 *DESCRIPTION
 fccc593a4d3bb584453e3e04a85f48cd *NAMESPACE
-48d1f7a89e486e7dacd31009f9f7089a *R/modues.R
-19ea0acec6113557967c7cbceed4bcd8 *build/partial.rdb
+6d53e57bb9667aaaab0e019b60bab718 *R/modues.R
+a6ec2f53c443398b6347900e9a7f6561 *build/partial.rdb
 c9b241ff50732dc60063f3f511838bce *inst/REFERENCES.bib
 f89d461768e759bdc0e70ec39ae387f9 *inst/include/CDynamicCausality.h
 d6fce5ec1dcc2f5236448a4f4e358444 *inst/include/CMultiLayerPerceptron.h

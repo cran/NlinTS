@@ -1,4 +1,5 @@
 library (Rcpp)
+library (Rdpack)
 
 .onLoad <- function(libname, pkgname) {
 }
