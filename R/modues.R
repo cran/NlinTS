@@ -48,6 +48,7 @@ varmlp <- function(df, lag, sizeOfHLayers, iters, bias = TRUE){
 #' @references{
 #'   \insertRef{granger1980}{NlinTS}
 #' }
+#' @importFrom Rdpack reprompt
 #' @examples
 #' library (timeSeries) # to extract time series
 #' library (NlinTS)

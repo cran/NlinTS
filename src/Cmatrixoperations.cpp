@@ -109,7 +109,7 @@ CVDouble VECbivar (CMatDouble  M, unsigned lag, bool d /* = false */) throw (Exc
     CMatDouble initials;
     CMatDouble residus;
     CMatDouble Alpha;
-    vector <int> orders, testCoint;
+    vector <unsigned> orders, testCoint;
     CMatDouble Test;
     unsigned nlins, i, maxOrder = 0;
     CMatDouble B, A, Present, Beta, pCible;
@@ -139,7 +139,7 @@ CVDouble VECbivar (CMatDouble  M, unsigned lag, bool d /* = false */) throw (Exc
                 {
                     initials[i].resize (maxOrder);
                     
-                    for (int m (0) ; m < orders[i] ; ++m)
+                    for (unsigned m (0) ; m < orders[i] ; ++m)
                     {
                         for (auto it = M[i].end () -1;it != M[i].begin ();--it)
                             *it -= *(it-1) ;

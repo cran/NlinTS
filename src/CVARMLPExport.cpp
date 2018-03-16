@@ -74,7 +74,7 @@ Rcpp::DataFrame CRcppExport::forecast (Rcpp::DataFrame DF)
       
       Struct::CMatDouble SM = Obj.forecast (P);
       
-      for ( int j = 0; j < nc; j++)
+      for ( unsigned j = 0; j < nc; j++)
           list[j] = Rcpp::wrap( SM[j].begin(), SM[j].end() ) ;
       
       dataFrame = list;

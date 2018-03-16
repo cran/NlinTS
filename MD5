@@ -1,7 +1,7 @@
-9f930a875db2486fc4b14e1af6d98e66 *DESCRIPTION
-fccc593a4d3bb584453e3e04a85f48cd *NAMESPACE
-6d53e57bb9667aaaab0e019b60bab718 *R/modues.R
-a6ec2f53c443398b6347900e9a7f6561 *build/partial.rdb
+64c8b93e7a91656044d69dd33b2aafb3 *DESCRIPTION
+699f17200a5c2c989fa7041ba0c94309 *NAMESPACE
+2323571dc4d9589bb3936621958aa90f *R/modues.R
+b83c0eb79c3420ca857baf33777ae63f *build/partial.rdb
 c9b241ff50732dc60063f3f511838bce *inst/REFERENCES.bib
 f89d461768e759bdc0e70ec39ae387f9 *inst/include/CDynamicCausality.h
 d6fce5ec1dcc2f5236448a4f4e358444 *inst/include/CMultiLayerPerceptron.h
@@ -20,11 +20,11 @@ c89cbc9aeff0a1f9ca6a35a690dd0c43 *man/causality.test.Rd
 5adb4a8eebe0ade90153418a3e47b7dc *man/nlin_causality.test.Rd
 cc412ad1432f91186dbb3ab628cc1f89 *man/varmlp.Rd
 769f8ebe14b796c2a5c71acdab64d94e *src/CDynamicCausality.cpp
-c4661473273be1a5c8afc5210f4d3539 *src/CMultiLayerPerceptron.cpp
+0e791e813f092e8a4a377ce218e3c2a5 *src/CMultiLayerPerceptron.cpp
 23b96c9165e851447abfccbd2b82791d *src/CNeuralNVarModel.cpp
-a84f6f2452848e2cf0f648619557c6f4 *src/CVARMLPExport.cpp
+787c715364dc5e8abe9fd885085c28a5 *src/CVARMLPExport.cpp
 d906a9ba4efeaa17fb26948626741a84 *src/CausalityTest.cpp
-edc83df4af746a9b0c6a8acb57ab00c9 *src/Cmatrixoperations.cpp
+74ab43c45124ad09594ab815c6c7d897 *src/Cmatrixoperations.cpp
 1e17bcd4bc2c7cec88a21b06d6c8b00d *src/FDIST.cpp
 ad3219f14707d04106ff0575a0c7678e *src/Ftable.cpp
 35b42205261f1fbb0807d724af35de17 *src/Operateurs.cpp

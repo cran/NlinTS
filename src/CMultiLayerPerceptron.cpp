@@ -66,8 +66,10 @@ dAvgTestError(0.0)
     if (bias)
     {
         ind_bias = 1;
-        for (i = 0; i < npl.size (); ++i)
-            npl[i] += 1;
+        for (auto & val : npl)
+            val ++;
+        //for (i = 0; i < npl.size (); ++i)
+          //  npl[i] += 1;
     }
     else ind_bias = 0;
 
