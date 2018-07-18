@@ -12,7 +12,7 @@
 using namespace Struct;
 
 namespace MatrixOperations {
-    bool regression (const CMatDouble &, const CVDouble &,  CVDouble &) throw (Exception);
+    bool regression (const CMatDouble &, const CVDouble &,  CVDouble &); // throw (Exception);
     
     void P_Part (CVDouble &  , CMatDouble & , CMatDouble & , unsigned int)
     ;
@@ -21,7 +21,7 @@ namespace MatrixOperations {
     
     void Diff (CVDouble & );
 
-    CVDouble VECbivar (CMatDouble  , unsigned , bool d /* = false */) throw (Exception);
+    CVDouble VECbivar (CMatDouble  , unsigned , bool d /* = false */); // throw (Exception);
 };
 
 

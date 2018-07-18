@@ -8,7 +8,7 @@ using namespace std;
 namespace Struct
 {
 /***********************************************************************************/
-double CVDouble::Mean () const throw (Exception)
+double CVDouble::Mean () const //throw (Exception)
   {
     if (this->size () == 0)
          throw Exception ("Vector of size null");
@@ -31,7 +31,7 @@ bool CVDouble::Contains (unsigned & x)
     return test;
 }
 /***********************************************************************************/
-double CVDouble::CMean () const throw (Exception)
+double CVDouble::CMean () const //throw (Exception)
 {
     if (this->size () == 0)
          throw Exception ("Vector of size null");
@@ -51,7 +51,7 @@ double CVDouble::CMean () const throw (Exception)
 
 /***********************************************************************************/
 
-double CVDouble::StdDev () const throw (Exception)
+double CVDouble::StdDev () const //throw (Exception)
 {
     if (0 == this->size ())
                throw Exception ("Vector of size null");
@@ -65,7 +65,7 @@ double CVDouble::StdDev () const throw (Exception)
 
 /***********************************************************************************/
 
-double CVDouble::Min () const throw (Exception)
+double CVDouble::Min () const //throw (Exception)
 {
     if (0 == this->size ())
                throw Exception ("Vector of size null");
@@ -78,7 +78,7 @@ double CVDouble::Min () const throw (Exception)
 
 /***********************************************************************************/
 
-double CVDouble::Max () const throw (Exception)
+double CVDouble::Max () const //throw (Exception)
 {
     if (0 == this->size ())
                throw Exception ("Vector of size null");
@@ -91,7 +91,7 @@ double CVDouble::Max () const throw (Exception)
 
 /***********************************************************************************/
 
-void   CVDouble::Standardise () throw (Exception)
+void   CVDouble::Standardise () //throw (Exception)
 {
     if (0 == this->size ())
                throw Exception ("Vector of size null");
@@ -103,7 +103,7 @@ void   CVDouble::Standardise () throw (Exception)
 };
 
 /***********************************************************************************/
-void   CVDouble::Normalise () throw (Exception)
+void   CVDouble::Normalise () //throw (Exception)
 {
     if (0 == this->size ())
                throw Exception ("Vector of size null");
@@ -147,7 +147,7 @@ void CMatDouble::Init_Mat( const vector< vector <double> > & M)
 
 /***********************************************************************************/
 
-// Verification si un vecteur contient une valeur nan
+// Check if a vector contains a nan value
 bool CVDouble::NBR_NAN() const
 {
     bool test = 1;
@@ -163,7 +163,7 @@ bool CVDouble::NBR_NAN() const
 /***********************************************************************************/
 
 // Interpolation x(t) = x(t-1)
-void CMatDouble::Interpol () throw (Exception)
+void CMatDouble::Interpol () //throw (Exception)
    {
        if (this->size () == 0)
            throw Exception ("Vector of size null");
@@ -382,7 +382,7 @@ void Resolve(const CMatDouble  & A , const CVDouble  & B, CVDouble & X)
 /***********************************************************************************/
 
 // Matrice Inverse
-bool Inverse ( const CMatDouble & B, CMatDouble & M) throw (Exception)
+bool Inverse ( const CMatDouble & B, CMatDouble & M) //throw (Exception)
 {
     bool a;
     unsigned int i , j , n = B.size();

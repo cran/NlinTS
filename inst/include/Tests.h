@@ -30,10 +30,10 @@ public:
     double SBC;
     DickeyFuller () {}
     // First constructor
-    DickeyFuller (const Rcpp::NumericVector & tS_, int lag_ = 0) throw ();
+    DickeyFuller (const Rcpp::NumericVector & tS_, int lag_ = 0); // throw ();
     
     // Second constructor
-    DickeyFuller (const Struct::CVDouble & tS_, int lag_ = 0) throw ();
+    DickeyFuller (const Struct::CVDouble & tS_, int lag_ = 0); // throw ();
     
     ~DickeyFuller () {}
     

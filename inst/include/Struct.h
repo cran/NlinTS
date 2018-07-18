@@ -41,14 +41,14 @@ class CVDouble : public std::vector<double>
 public:
     CVDouble            (unsigned Size = 0) : vector<double> (Size) {}
     //CVDouble            () : vector<double> () {}
-    double Mean         () const    throw (Exception);
+    double Mean         () const;    //throw (Exception);
     bool   Contains     (unsigned & x);
-    double CMean        () const    throw (Exception);
-    double StdDev       () const    throw (Exception);
-    double Min          () const    throw (Exception);
-    double Max          () const    throw (Exception);
-    void Standardise    ()          throw (Exception);
-    void Normalise  ()              throw (Exception);
+    double CMean        () const; //    throw (Exception);
+    double StdDev       () const; //    throw (Exception);
+    double Min          () const; //   throw (Exception);
+    double Max          () const; //    throw (Exception);
+    void Standardise    (); //          throw (Exception);
+    void Normalise  (); //              throw (Exception);
     void Add            (double & m);
     bool NBR_NAN        () const;
 };
@@ -61,21 +61,21 @@ public:
     void Standardise  ();
     CMatDouble Normalise  ();
     void Denormalising (const CMatDouble & minMax);
-    void Interpol ()               throw (Exception);
+    void Interpol () ; //             throw (Exception);
 };
 
 
 void permute( CVDouble &X , CVDouble &Y);
 
-CMatDouble Trans (const CMatDouble & M); // Matrice Transposée
+CMatDouble Trans (const CMatDouble & M); // Transpose Matrix
 
 bool Trig( CMatDouble & A , CMatDouble & B); // Triangularisation
 
 double Det (const CMatDouble & M); // Determinant
 
-void Resolve(const CMatDouble  & A , const CVDouble  & B, CVDouble & X); // Resolution du systeme A * X = B
+void Resolve(const CMatDouble  & A , const CVDouble  & B, CVDouble & X); // Resolution of the system A * X = B
 
-bool Inverse ( const CMatDouble & B, CMatDouble & M) throw (Exception); // Matrice Inverse
+bool Inverse ( const CMatDouble & B, CMatDouble & M); // throw (Exception); //  Inversed Matrix
 
 double Quartil_1 (const CVDouble &T);
 

@@ -16,7 +16,7 @@ using namespace std;
 
 
 /*******************/
-DickeyFuller::DickeyFuller (const Rcpp::NumericVector & tS_, int lag_) throw ()
+DickeyFuller::DickeyFuller (const Rcpp::NumericVector & tS_, int lag_) //throw ()
 {
     // Checking if the lag value is positif
     try {
@@ -78,7 +78,7 @@ DickeyFuller::DickeyFuller (const Rcpp::NumericVector & tS_, int lag_) throw ()
     df = pBeta[1] / Stdv_Value;
 };
 /*******************/
-DickeyFuller::DickeyFuller (const Struct::CVDouble & tS_, int lag_ ) throw ()
+DickeyFuller::DickeyFuller (const Struct::CVDouble & tS_, int lag_ ) //throw ()
 {
     // Checking if the lag value is positif
     if (lag_ <= 0)

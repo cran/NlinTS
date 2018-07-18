@@ -28,7 +28,7 @@ DynamicCausalityTest::DynamicCausalityTest (Rcpp::NumericVector  ts1_,
                                             Rcpp::IntegerVector  hiddenLayersOfUnivModel,
                                             Rcpp::IntegerVector  hiddenLayersOfBivModel,
                                             int interations,
-                                            bool bias) throw ()
+                                            bool bias) //throw ()
                       {
     
     // Checking if the lag value is positif

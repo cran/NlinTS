@@ -24,7 +24,7 @@ public:
     CausalityTest (Rcpp::NumericVector,
                    Rcpp::NumericVector,
                    int,
-                   bool d = false) throw (Exception);
+                   bool d = false); // throw (Exception);
     ~CausalityTest (){};
     
     friend Struct::CVDouble VECbivar (Struct::CMatDouble, unsigned, bool d);

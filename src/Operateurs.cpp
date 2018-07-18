@@ -8,7 +8,7 @@ using namespace std;
 using namespace Struct;
 
 /******** Produit vecteur--vecteur *********/
-void MultCVDouble (const CVDouble & A, const CVDouble & B, CVDouble & Res) throw (Exception)
+void MultCVDouble (const CVDouble & A, const CVDouble & B, CVDouble & Res) //throw (Exception)
 {
     unsigned int i, n = A.size();
     Res.clear();
@@ -19,7 +19,7 @@ void MultCVDouble (const CVDouble & A, const CVDouble & B, CVDouble & Res) throw
         }
 
 /********* Produit Matric--vecteur *********/
-void MultCVDouble (const CMatDouble & A, const CVDouble & B, CVDouble & Res) throw (Exception)
+void MultCVDouble (const CMatDouble & A, const CVDouble & B, CVDouble & Res) //throw (Exception)
 {
     unsigned int i , j, n = A[0].size (), m = B.size ();
     Res.clear();
@@ -35,7 +35,7 @@ void MultCVDouble (const CMatDouble & A, const CVDouble & B, CVDouble & Res) thr
 }
 
 /*************** Produit Matrice--Matrice  ***************/
-void MultCVDouble (const CMatDouble & A, const CMatDouble & B, CMatDouble & Res) throw (Exception)
+void MultCVDouble (const CMatDouble & A, const CMatDouble & B, CMatDouble & Res) //throw (Exception)
 {
     unsigned int  n = B.size();
     Res.clear ();

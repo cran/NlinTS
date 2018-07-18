@@ -18,7 +18,8 @@ using namespace std;
 
 /************************************/
 CausalityTest::CausalityTest (Rcpp::NumericVector  ts1_,
-                              Rcpp::NumericVector  ts2_, int lag_, bool d /* = false */) throw (Exception) {
+                              Rcpp::NumericVector  ts2_, int lag_, bool d /* = false */) //throw (Exception) 
+{
     
     // Checking if the lag value is positif
     if (lag_ <= 0)

@@ -11,7 +11,7 @@ using namespace Struct;
 
 
 namespace MatrixOperations {
-bool regression (const CMatDouble & Mn, const CVDouble & Y,  CVDouble & pBeta ) throw (Exception)
+bool regression (const CMatDouble & Mn, const CVDouble & Y,  CVDouble & pBeta ) //throw (Exception)
 {
     unsigned int i= 0;
     CMatDouble A, B, M = Mn;
@@ -104,7 +104,7 @@ void Diff (CVDouble & V) {
     V.erase (V.begin ());
 }
 /***********************************************************/
-CVDouble VECbivar (CMatDouble  M, unsigned lag, bool d /* = false */) throw (Exception)
+CVDouble VECbivar (CMatDouble  M, unsigned lag, bool d /* = false */) //throw (Exception)
 {
     CMatDouble initials;
     CMatDouble residus;

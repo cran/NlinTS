@@ -40,7 +40,7 @@ public:
                           Rcpp::IntegerVector  hiddenLayersOfBivModel,
                           int interations,
                           bool bias = true
-                          ) throw ();
+                          ); // throw ();
     DynamicCausalityTest (){};
     ~DynamicCausalityTest (){};
     
