@@ -9,24 +9,24 @@ varmlp(df, lag, sizeOfHLayers, iters, bias = TRUE)
 \arguments{
 \item{df}{A numerical dataframe}
 
-\item{lag}{The lag parameter}
+\item{lag}{The lag parameter.}
 
-\item{sizeOfHLayers}{Integer vector that contains the size of hidden layers (the number of hidden layers is the size of this vector)}
+\item{sizeOfHLayers}{Integer vector that contains the size of hidden layers, where the length of this vector is the number of hidden layers, and the i-th element is the number of neurons in the i-th hidden layer.}
 
-\item{iters}{The number of iterations}
+\item{iters}{The number of iterations.}
 
-\item{bias}{Logical, true if the bias have to be used in the network}
+\item{bias}{Logical, true if the bias have to be used in the network.}
 }
 \value{
-train (df):  updates the model using the input dataframe df
+train (df):  updates the model using the input dataframe.
 
-forecast (df):  returns the next row forecasts of an given dataframe df
+forecast (df):  returns the next row forecasts of an given dataframe.
 }
 \description{
 Artificial Neural Network VAR (Vector Auto-Regressive) model using a MultiLayer Perceptron.
 }
 \details{
-This function constructs the model.
+This function builds the model, and returns an object that can be used to make forecasts and can be updated using new data.
 }
 \examples{
 library (timeSeries) # to extract time series

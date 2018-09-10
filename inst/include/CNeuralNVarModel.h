@@ -1,6 +1,15 @@
 /**
+ *
+ * @file    CNeuralNVarModel.h
+ *
  * @authors Hmamouche Youssef
+ *
  * @date    02/07/2017
+ *
+ * @version V1.0
+ *
+ * @brief  class Neural Network VAR model
+ *
  **/
 
 #ifndef CNEURALNVARMODEL_H
@@ -20,8 +29,8 @@ private:
     std::vector<double> SSR;
     bool _bias;
     unsigned  lag;  // lag parameter
-    unsigned  Nb_Ln ;    // nombre de lignes
-    unsigned  Nb_Cl ;    // nombre d'attributs
+    unsigned  Nb_Ln ;    // numbre of observations
+    unsigned  Nb_Cl ;    // nombre of variables
     Struct::CMatDouble inputMat ;    // input data
     
 public:

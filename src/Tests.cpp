@@ -1,4 +1,5 @@
 /**
+ * Class for Augmented Dickey Fuller test 
  * @authors Hmamouche Youssef
  **/
 
@@ -15,8 +16,8 @@ using namespace MatrixOperations;
 using namespace std;
 
 
-/*******************/
-DickeyFuller::DickeyFuller (const Rcpp::NumericVector & tS_, int lag_) //throw ()
+/* Constructor for the Augmented Dickey Fuller test that takes an R dataFrame as argument */
+DickeyFuller::DickeyFuller (const Rcpp::NumericVector & tS_, int lag_) 
 {
     // Checking if the lag value is positif
     try {
@@ -35,7 +36,7 @@ DickeyFuller::DickeyFuller (const Rcpp::NumericVector & tS_, int lag_) //throw (
     
     // Initialisation
     Struct::CVDouble one, pBeta, predicted, tStat (tS), errorCorrection, trend;
-    //Struct::CVDouble errorCor;
+ 
     Struct::CMatDouble B, target, Var;
     
     // Differentiation
@@ -44,10 +45,10 @@ DickeyFuller::DickeyFuller (const Rcpp::NumericVector & tS_, int lag_) //throw (
     tStat.erase (tStat.begin ());
     
     nl = tStat.size ();
+
     for (unsigned i = lag  ; i < nl ; i++) {
         one.push_back (1);
         errorCorrection.push_back (tS[i]);
-        //errorCor.push_back (tStat[i+1]);
         trend.push_back (i);
     }
     
@@ -72,12 +73,11 @@ DickeyFuller::DickeyFuller (const Rcpp::NumericVector & tS_, int lag_) //throw (
         SSE += pow (predicted[i] - target[0].Mean(), 2);
     
     Stdv_Value = sqrt(Stdv_Value * Var[1][1] / (B[0].size () - B.size ()));
-    
     SBC = nl * log(SSE / nl) + (lag + 3) * log (nl);
-    //SBC = Stdv_Value;
     df = pBeta[1] / Stdv_Value;
 };
-/*******************/
+
+/* Constructor for the Augmented Dickey Fuller test that takes an C++ matrix as argument */
 DickeyFuller::DickeyFuller (const Struct::CVDouble & tS_, int lag_ ) //throw ()
 {
     // Checking if the lag value is positif
@@ -159,7 +159,6 @@ int order (const Struct::CVDouble & tS, int p) {
         
         serie.erase (serie.begin ());
         test = DickeyFuller (serie,p);
-        //test.summary();
     }
     return res;
 }

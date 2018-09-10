@@ -7,18 +7,20 @@
 causality.test(ts1, ts2, lag, diff = FALSE)
 }
 \arguments{
-\item{ts1}{Numerical dataframe containing one variable}
+\item{ts1}{Numerical dataframe containing one variable.}
 
-\item{ts2}{Numerical dataframe containing one variable}
+\item{ts2}{Numerical dataframe containing one variable.}
 
-\item{lag}{The lag parameter}
+\item{lag}{The lag parameter.}
 
-\item{diff}{Logical argument for the option of making data stationary}
+\item{diff}{Logical argument for the option of making data stationary before making the test.}
 }
 \value{
-summary ():  shows the test results
+pvalue: the p-value of the test.
 
-F-test (): returns the value of the test
+Ftest:  the statistic of the test.
+
+summary ():  shows the test results.
 }
 \description{
 The Granger causality test

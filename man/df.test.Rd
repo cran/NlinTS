@@ -7,14 +7,14 @@
 df.test(ts, lag)
 }
 \arguments{
-\item{ts}{Numerical dataframe}
+\item{ts}{Numerical dataframe.}
 
-\item{lag}{The lag parameter}
+\item{lag}{The lag parameter.}
 }
 \value{
-summary ():  shows the test results
+df: returns the value of the test.
 
-df (): returns the value of the test
+summary ():  shows the test results.
 }
 \description{
 Augmented Dickey_Fuller test

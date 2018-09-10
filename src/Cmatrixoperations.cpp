@@ -13,40 +13,34 @@ using namespace Struct;
 namespace MatrixOperations {
 bool regression (const CMatDouble & Mn, const CVDouble & Y,  CVDouble & pBeta ) //throw (Exception)
 {
-    unsigned int i= 0;
     CMatDouble A, B, M = Mn;
     CVDouble  Beta, Teta;
-    CVDouble black_list ;
     pBeta.clear ();
     pBeta.resize (M.size ());
     bool test = true;
     
-    /** Elimination de la deuxième colonne de chaque couple ayant un determinant nul **/
-    
     MultCVDouble (Trans (M), M, B);
     
     test = Inverse (B , A);
+
     if (!test)
         return 0;
     
     MultCVDouble (Trans (M), Y, Teta);
     MultCVDouble (A, Teta, Beta);
     
+    pBeta = Beta;
+
+    Beta.clear();
     Teta.clear ();
     A.clear();
     M.clear();
     B.clear();
-    
-    if (black_list.size () != 0)
-        for (i = 0 ; i < black_list.size () ; ++i)
-            pBeta[black_list[i]] = Beta[i];
-    else
-        pBeta = Beta;
-    Beta.clear();
+
     return 1;
 }
 /***********************************************************************************/
-// Building the multidimensional matrix of the Var(p) Model
+// Building the  matrix of lagged variables of the Var(p) Model
 
 void P_Part (CVDouble & V , CMatDouble & Present, CMatDouble & M, unsigned int  p)
 {
@@ -71,11 +65,10 @@ void P_Part (CVDouble & V , CMatDouble & Present, CMatDouble & M, unsigned int  
         M.push_back (P);
         P.clear ();
     }
-    //M = Trans(M);
 }
 
 /*********************************************************************************/
-// Building the multidimensional matrix of the Var(p) Model
+// Building the  matrix of lagged variables of the Var(p) Model
 
 void Pr_Part (CVDouble & V, CMatDouble & M, unsigned int  p)
 {

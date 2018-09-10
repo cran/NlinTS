@@ -1,11 +1,11 @@
 /*!
- * @file CRcppExport.h
+ * @file CVARMLPExport.h
  *
  * @author youssef hmamouche
  *
- * @date 15/06/2015
+ * @date 03/07/2017
  *
- * @brief Main classe of the module VARMLP, allowing the interaction with C++ class.
+ * @brief class export the VARMLP model.
  *
  */
 

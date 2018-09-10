@@ -1,5 +1,15 @@
 /**
+ *
+ * @file    CausalityTest.cpp
+ *
  * @authors Hmamouche Youssef
+ *
+ * @date    07/2017
+ *
+ * @version V1.0
+ *
+ * @brief  the Granger CausalityT est
+ *
  **/
 
 #include <Rcpp.h>
@@ -16,14 +26,13 @@ using namespace Struct;
 using namespace std;
 
 
-/************************************/
 CausalityTest::CausalityTest (Rcpp::NumericVector  ts1_,
                               Rcpp::NumericVector  ts2_, int lag_, bool d /* = false */) //throw (Exception) 
 {
     
     // Checking if the lag value is positif
     if (lag_ <= 0)
-        throw Exception ("The lag value is incorrect");
+        throw Exception ("The lag parameter is incorrect!");
 
     lag  = lag_;
     
@@ -34,7 +43,7 @@ CausalityTest::CausalityTest (Rcpp::NumericVector  ts1_,
         ts2.push_back (val);
     
     if (ts1.size() != ts2.size())
-       throw Exception ("Time series have not the same size");
+       throw Exception ("The time series have not the same length!");
  
     
     // variables
@@ -55,10 +64,11 @@ CausalityTest::CausalityTest (Rcpp::NumericVector  ts1_,
     RSS1 = VECT[0];
     
     int T = nl - lag;
-    // F test
+
+    // compute the F test
     Ftest = ((RSS0 - RSS1) / lag) / (RSS1 / (T - 2*lag - 1));
     
-    // p-value of the F-test
+    // compute the p-value of the test
     p_value = getPvalue (Ftest , lag , T - 2*lag - 1);
     
     if (lag <= 20 and T - 2*lag - 1 <= 100)
@@ -70,6 +80,8 @@ CausalityTest::CausalityTest (Rcpp::NumericVector  ts1_,
     else if (lag > 20 and T - 2*lag - 1 > 100)
         criticTest = ftable[100][20];
 }
+
+// The Summary function
 void CausalityTest::summary ()
 {
     Rcpp::Rcout <<  "------------------------------------------------\n";
@@ -80,9 +92,13 @@ void CausalityTest::summary ()
     Rcpp::Rcout <<  "The p_value of the F-test: "<< p_value << "\n";
     Rcpp::Rcout <<  "The critical value with 5% of risk:: "<< criticTest <<"\n";
 }
+
+// Get the p-value of the test
 double CausalityTest::get_p_value () {
     return p_value;
 }
+
+// Get the  statistic of the test
 double CausalityTest::get_F_test () {
     return Ftest;
 }

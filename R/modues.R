@@ -7,14 +7,14 @@ library (Rdpack)
 
 #' Artificial Neural Network VAR (Vector Auto-Regressive) model using a MultiLayer Perceptron.
 #'
-#' @details This function constructs the model.
+#' @details This function builds the model, and returns an object that can be used to make forecasts and can be updated using new data.
 #' @param df A numerical dataframe
-#' @param sizeOfHLayers Integer vector that contains the size of hidden layers (the number of hidden layers is the size of this vector)
-#' @param lag The lag parameter
-#' @param iters The number of iterations
-#' @param bias Logical, true if the bias have to be used in the network
-#' @return train (df):  updates the model using the input dataframe df
-#' @return forecast (df):  returns the next row forecasts of an given dataframe df
+#' @param sizeOfHLayers Integer vector that contains the size of hidden layers, where the length of this vector is the number of hidden layers, and the i-th element is the number of neurons in the i-th hidden layer.
+#' @param lag The lag parameter.
+#' @param iters The number of iterations.
+#' @param bias Logical, true if the bias have to be used in the network.
+#' @return train (df):  updates the model using the input dataframe.
+#' @return forecast (df):  returns the next row forecasts of an given dataframe.
 #' @examples
 #' library (timeSeries) # to extract time series
 #' library (NlinTS)
@@ -39,12 +39,13 @@ varmlp <- function(df, lag, sizeOfHLayers, iters, bias = TRUE){
 #' The Granger causality test
 #'
 #' @details The test evaluates if the second time series causes the first one using the Granger test of causality.
-#' @param ts1 Numerical dataframe containing one variable
-#' @param ts2 Numerical dataframe containing one variable
-#' @param lag The lag parameter
-#' @param diff Logical argument for the option of making data stationary
-#' @return summary ():  shows the test results
-#' @return F-test (): returns the value of the test
+#' @param ts1 Numerical dataframe containing one variable.
+#' @param ts2 Numerical dataframe containing one variable.
+#' @param lag The lag parameter.
+#' @param diff Logical argument for the option of making data stationary before making the test.
+#' @return pvalue: the p-value of the test.
+#' @return Ftest:  the statistic of the test.
+#' @return summary ():  shows the test results.
 #' @references{
 #'   \insertRef{granger1980}{NlinTS}
 #' }
@@ -65,22 +66,22 @@ causality.test <- function(ts1,ts2, lag, diff = FALSE){
 #' A non linear Granger causality test
 #'
 #' @details The test evaluates if the second time series causes the first one. Two MLP artificial neural networks are evaluated to perform the test, one using just the target time series (ts1), and the second using both time series.
-#' @param ts1 Numerical series
-#' @param ts2 Numerical series
+#' @param ts1 Numerical series.
+#' @param ts2 Numerical series.
 #' @param lag The lag parameter
-#' @param LayersUniv Integer vector of the size of hidden layers of the univariate model
-#' @param LayersBiv Integer vector of the size of hidden layers of the bivariate model
-#' @param iters The number of iterations
-#' @param bias Logical argument  for the option of using the bias in the networks
-#' @return pvalue: the p-value of the test
-#' @return Ftest:  the statistic of the test
-#' @return summary ():  shows the test results
-#' @return F-test (): returns the value of the test
+#' @param LayersUniv Integer vector that contains the size of hidden layers of the univariate model. The length of this vector is the number of hidden layers, and the i-th element is the number of neurons in the i-th hidden layer.
+#' @param LayersBiv Integer vector that contains the size of hidden layers of the bivariate model. The length of this vector is the number of hidden layers, and the i-th element is the number of neurons in the i-th hidden layer.
+#' @param iters The number of iterations.
+#' @param bias Logical argument  for the option of using the bias in the networks.
+#' @return pvalue: the p-value of the test.
+#' @return Ftest:  the statistic of the test.
+#' @return summary ():  shows the test results.
 #' @examples
 #' library (timeSeries) # to extract time series
 #' library (NlinTS)
 #' data = LPP2005REC
-#' model = nlin_causality.test (data[,1], data[,2], 2, c(2), c(4), 500, TRUE)
+#' # We construct the model based
+#' model = nlin_causality.test (data[,1], data[,2], 2, c(2, 2), c(4, 4), 500, TRUE)
 #' model$summary ()
 nlin_causality.test <- function(ts1,ts2, lag,LayersUniv, LayersBiv, iters, bias=TRUE){
     dynCaus.test =  Module ('NlinCausalityTest', PACKAGE = "NlinTS")
@@ -93,14 +94,14 @@ nlin_causality.test <- function(ts1,ts2, lag,LayersUniv, LayersBiv, iters, bias=
 #' Augmented Dickey_Fuller test
 #'
 #' @details Computes the stationarity test for a given univariate time series.
-#' @param ts Numerical dataframe
-#' @param lag The lag parameter
-#' @return summary ():  shows the test results
-#' @return df (): returns the value of the test
+#' @param ts Numerical dataframe.
+#' @param lag The lag parameter.
+#' @return df: returns the value of the test.
+#' @return summary ():  shows the test results.
 #' @references{
 #'   \insertRef{elliott1992efficient}{NlinTS}
 #' }
-
+#' @importFrom Rdpack reprompt
 #' @examples
 #' library (timeSeries)
 #' library (NlinTS)

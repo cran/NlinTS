@@ -7,28 +7,26 @@
 nlin_causality.test(ts1, ts2, lag, LayersUniv, LayersBiv, iters, bias = TRUE)
 }
 \arguments{
-\item{ts1}{Numerical series}
+\item{ts1}{Numerical series.}
 
-\item{ts2}{Numerical series}
+\item{ts2}{Numerical series.}
 
 \item{lag}{The lag parameter}
 
-\item{LayersUniv}{Integer vector of the size of hidden layers of the univariate model}
+\item{LayersUniv}{Integer vector that contains the size of hidden layers of the univariate model. The length of this vector is the number of hidden layers, and the i-th element is the number of neurons in the i-th hidden layer.}
 
-\item{LayersBiv}{Integer vector of the size of hidden layers of the bivariate model}
+\item{LayersBiv}{Integer vector that contains the size of hidden layers of the bivariate model. The length of this vector is the number of hidden layers, and the i-th element is the number of neurons in the i-th hidden layer.}
 
-\item{iters}{The number of iterations}
+\item{iters}{The number of iterations.}
 
-\item{bias}{Logical argument  for the option of using the bias in the networks}
+\item{bias}{Logical argument  for the option of using the bias in the networks.}
 }
 \value{
-pvalue: the p-value of the test
+pvalue: the p-value of the test.
 
-Ftest:  the statistic of the test
+Ftest:  the statistic of the test.
 
-summary ():  shows the test results
-
-F-test (): returns the value of the test
+summary ():  shows the test results.
 }
 \description{
 A non linear Granger causality test
@@ -40,6 +38,7 @@ The test evaluates if the second time series causes the first one. Two MLP artif
 library (timeSeries) # to extract time series
 library (NlinTS)
 data = LPP2005REC
-model = nlin_causality.test (data[,1], data[,2], 2, c(2), c(4), 500, TRUE)
+# We construct the model based
+model = nlin_causality.test (data[,1], data[,2], 2, c(2, 2), c(4, 4), 500, TRUE)
 model$summary ()
 }
