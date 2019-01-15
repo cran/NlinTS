@@ -1,5 +1,5 @@
 /*  NlinTS -- Rcpp package for non-linear time series analysis
-  Copyright (C) 2015 - 2018  Hmamouche youssef
+  Copyright (C) 2015 - 2019  Hmamouche youssef
   This file is part of NlinTS
   NlinTS is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 #include "../inst/include/Tests.h"
 #include "../inst/include/CausalityTest.h"
 #include "../inst/include/CDynamicCausality.h"
+#include "../inst/include/Entropy.h"
 
 using namespace Rcpp ;
 
@@ -43,10 +44,10 @@ RCPP_MODULE (DickeyFuller) {
 RCPP_MODULE (CausalityTest) {
   class_<CausalityTest> ("CausalityTest")
         .constructor <Rcpp::NumericVector, Rcpp::NumericVector, int, bool> ()
-        .property ("pvalue", &CausalityTest::get_p_value, "return the p-value of the test")
-        .property ("Ftest", &CausalityTest::get_F_test, "return the value of F test")
         .method ("summary", &CausalityTest::summary, "Summary of the test")
-    ;
+        .property ("pvalue", &CausalityTest::get_p_value, "return the p-value of the test")
+        .property ("gci", &CausalityTest::get_gci, "return the granger causality index of the test")
+        .property ("Ftest", &CausalityTest::get_F_test, "return the value of F test");
 }
  /*'The non linear Granger CausalityTest module. */
  RCPP_MODULE (NlinCausalityTest) {
@@ -59,6 +60,18 @@ RCPP_MODULE (CausalityTest) {
                         int,
                         bool> ()
     .method ("summary", &DynamicCausalityTest::summary, "Summary of the test")
+    .property ("gci", &DynamicCausalityTest::get_gci, "return the granger causality index of the test")
     .property ("pvalue", &DynamicCausalityTest::get_p_value, "returns the p-value of the test")
     .property ("Ftest", &DynamicCausalityTest::get_F_test, "returns the value of F test");
+}
+
+RCPP_MODULE (InfoEntropy) {
+  function( "entropy_disc", &entropy_disc);
+  function( "mutualInformation_disc", &mutualInformation_disc);
+  function( "mutualInformation_disc_u", &mutualInformation_disc_u);
+  function( "transferEntropy_disc", &transferEntropy_disc);
+
+  function( "entropy_cont", &entropy_cont);
+  function( "mutualInformation_cont", &mutualInformation_cont);
+  function( "transferEntropy_cont", &transferEntropy_cont);
 }

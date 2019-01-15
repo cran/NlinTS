@@ -73,16 +73,13 @@ void P_Part (CVDouble & V , CMatDouble & Present, CMatDouble & M, unsigned int  
 void Pr_Part (CVDouble & V, CMatDouble & M, unsigned int  p)
 {
     unsigned int  N = V.size ();
-    unsigned int i;
-    unsigned int j;
     CVDouble P ;
     
-    for (j = 1 ; j <= p ; j++)
+    for (unsigned j = 1 ; j <= p ; j++)
     {
-        for (i = p + 1 ; i <= N ; i++)
+        for (unsigned i = p + 1 ; i <= N ; i++)
         {
-            P.push_back (V[i - j]) ;
-            
+            P.push_back (V[i - j]) ;     
         }
         M.push_back (P);
         P.clear ();

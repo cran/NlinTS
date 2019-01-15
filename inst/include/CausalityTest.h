@@ -19,6 +19,7 @@ private:
     double Ftest;
     unsigned lag;
     double p_value;
+    double GCI;
     double criticTest;
     
 public:
@@ -40,6 +41,9 @@ public:
     
     /* The bivariate VAR model */
     friend Struct::CVDouble VECbivar (Struct::CMatDouble, unsigned, bool d);
+
+    // The causality Index
+    double get_gci ();
 
     // Get the p-value of the test
     double get_p_value ();

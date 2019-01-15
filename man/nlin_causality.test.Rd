@@ -22,9 +22,11 @@ nlin_causality.test(ts1, ts2, lag, LayersUniv, LayersBiv, iters, bias = TRUE)
 \item{bias}{Logical argument  for the option of using the bias in the networks.}
 }
 \value{
-pvalue: the p-value of the test.
+gci: the Granger causality index.
 
 Ftest:  the statistic of the test.
+
+pvalue: the p-value of the test.
 
 summary ():  shows the test results.
 }

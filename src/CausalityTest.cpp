@@ -65,6 +65,9 @@ CausalityTest::CausalityTest (Rcpp::NumericVector  ts1_,
     
     int T = nl - lag;
 
+    // The Granger causality Index
+    GCI = log (RSS0 / RSS1);
+
     // compute the F test
     Ftest = ((RSS0 - RSS1) / lag) / (RSS1 / (T - 2*lag - 1));
     
@@ -88,6 +91,7 @@ void CausalityTest::summary ()
     Rcpp::Rcout <<  "        Test of causality" << "\n";
     Rcpp::Rcout <<  "------------------------------------------------\n";
     Rcpp::Rcout <<  "The lag parameter: p = "<< lag << "\n";
+    Rcpp::Rcout <<  "The Granger causality Index: GCI = "<< GCI << "\n";
     Rcpp::Rcout <<  "The value of the F-test: "<< Ftest << "\n";
     Rcpp::Rcout <<  "The p_value of the F-test: "<< p_value << "\n";
     Rcpp::Rcout <<  "The critical value with 5% of risk:: "<< criticTest <<"\n";
@@ -96,6 +100,10 @@ void CausalityTest::summary ()
 // Get the p-value of the test
 double CausalityTest::get_p_value () {
     return p_value;
+}
+
+double CausalityTest::get_gci () {
+    return GCI;
 }
 
 // Get the  statistic of the test

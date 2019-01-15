@@ -10,12 +10,14 @@ RcppExport SEXP _rcpp_module_boot_VAR_MLP();
 RcppExport SEXP _rcpp_module_boot_DickeyFuller();
 RcppExport SEXP _rcpp_module_boot_CausalityTest();
 RcppExport SEXP _rcpp_module_boot_NlinCausalityTest();
+RcppExport SEXP _rcpp_module_boot_InfoEntropy();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_rcpp_module_boot_VAR_MLP", (DL_FUNC) &_rcpp_module_boot_VAR_MLP, 0},
     {"_rcpp_module_boot_DickeyFuller", (DL_FUNC) &_rcpp_module_boot_DickeyFuller, 0},
     {"_rcpp_module_boot_CausalityTest", (DL_FUNC) &_rcpp_module_boot_CausalityTest, 0},
     {"_rcpp_module_boot_NlinCausalityTest", (DL_FUNC) &_rcpp_module_boot_NlinCausalityTest, 0},
+    {"_rcpp_module_boot_InfoEntropy", (DL_FUNC) &_rcpp_module_boot_InfoEntropy, 0},
     {NULL, NULL, 0}
 };
 

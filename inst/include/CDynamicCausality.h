@@ -29,13 +29,12 @@ private:
     double Ftest;
     unsigned lag;
     double p_value;
+    double GCI;
     double criticTest;
     
 public:
     
     /**
-    Construct the model
-
     @param ts1_ the first univariate time series as a vector.
     @param ts2_ the second time series.
     @param lag_ the lag parameter.
@@ -55,11 +54,13 @@ public:
                           bool bias = true
                           );
 
-    // the default constructor
     DynamicCausalityTest (){};
     ~DynamicCausalityTest (){};
     
-       // Get the p-value of the test
+    // The causality index
+    double get_gci ();
+
+    // Get the p-value of the test
     double get_p_value ();
 
     // Get the  statistic of the test
