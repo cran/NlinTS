@@ -15,17 +15,17 @@ te_cont(X, Y, p = 1, q = 1, k = 3, normalize = FALSE)
 
 \item{q}{Integer the lag parameter to use for the first vector, (q = 1 by default).}
 
-\item{k}{Integer argument, the number of neighbours.}
+\item{k}{Integer argument, the number of neighbors.}
 
 \item{normalize}{Logical argument  for the option of normalizing value of TE (transfer entropy) (FALSE by default).
 This normalization is different from the discrete case, because, here the term H (X(t)| X(t-1), ..., X(t-p)) may be negative.
-Consequently, to get the normalized TE (NTE), we divide TE by H0 - H (X(t)| X(t-1), ..., X(t-p)), where H0 is the entropy of X.}
+Consequently, we use another technique, we divide TE by H0 - H (X(t)| X(t-1), ..., X(t-p), Yt-1), ..., Y(t-q)), where H0 is the max entropy (of uniform distribution).}
 }
 \description{
 Continuous  Transfer Entropy
 }
 \details{
-Computes the continuous Transfer Entropy from the second time series to the one using the Kraskov approximation.
+Computes the continuous Transfer Entropy from the second time series to the one using the Kraskov estimation
 }
 \examples{
 library (timeSeries)

@@ -4,28 +4,30 @@
 \alias{mi_cont}
 \title{Continuous  Mutual Information}
 \usage{
-mi_cont(df, k = 3, algo = "ksg1")
+mi_cont(X, Y, k = 3, algo = "ksg1")
 }
 \arguments{
-\item{df}{Datafame of type Integer}
+\item{X}{Integer vector, first time series.}
 
-\item{k}{Integer argument, the number of neighbours.}
+\item{Y}{Integer vector, the second time series.}
 
-\item{algo}{String argument specifies the algorithm use ("ksg1", "ksg2"), as tow propositions of Kraskov approximation are provided. The first one ("ksg1") is used by default}
+\item{k}{Integer argument, the number of neighbors.}
+
+\item{algo}{String argument specifies the algorithm use ("ksg1", "ksg2"), as tow propositions of Kraskov estimation are provided. The first one ("ksg1") is used by default}
 }
 \description{
 Continuous  Mutual Information
 }
 \details{
-Computes the   Mutual Information between columns of a dataframe using the Kraskov approximation.
+Computes the   Mutual Information between two vectors using the Kraskov estimator.
 }
 \examples{
 library (timeSeries)
 library (NlinTS)
 #load data
 data = LPP2005REC
-print (mi_cont (data, 3, 'ksg1'))
-print (mi_cont (data, 3, 'ksg2'))
+print (mi_cont (data[,1], data[,2], 3, 'ksg1'))
+print (mi_cont (data[,1], data[,2], 3, 'ksg2'))
 }
 \references{
 {

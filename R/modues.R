@@ -218,7 +218,7 @@ te_disc <- function (X, Y, p = 1, q = 1, log = "log2", normalize = FALSE)
 #'
 #' @details Computes the continuous entropy of a numerical vector using the Kozachenko approximation.
 #' @param V  Interger vector.
-#' @param k  Integer argument, the number of neighbours.
+#' @param k  Integer argument, the number of neighbors.
 #' @references{
 #'   \insertRef{kraskov2004estimating}{NlinTS}
 #' }
@@ -239,10 +239,11 @@ te_disc <- function (X, Y, p = 1, q = 1, log = "log2", normalize = FALSE)
 # #*****************************************#
 #' Continuous  Mutual Information
 #'
-#' @details Computes the   Mutual Information between columns of a dataframe using the Kraskov approximation.
-#' @param df  Datafame of type Integer
-#' @param k  Integer argument, the number of neighbours.
-#' @param algo String argument specifies the algorithm use ("ksg1", "ksg2"), as tow propositions of Kraskov approximation are provided. The first one ("ksg1") is used by default
+#' @details Computes the   Mutual Information between two vectors using the Kraskov estimator.
+#' @param X Integer vector, first time series.
+#' @param Y Integer vector, the second time series.
+#' @param k  Integer argument, the number of neighbors.
+#' @param algo String argument specifies the algorithm use ("ksg1", "ksg2"), as tow propositions of Kraskov estimation are provided. The first one ("ksg1") is used by default
 #' @references{
 #'   \insertRef{kraskov2004estimating}{NlinTS}
 #' }
@@ -252,12 +253,12 @@ te_disc <- function (X, Y, p = 1, q = 1, log = "log2", normalize = FALSE)
 #' library (NlinTS)
 #' #load data
 #' data = LPP2005REC
-#' print (mi_cont (data, 3, 'ksg1'))
-#' print (mi_cont (data, 3, 'ksg2'))
+#' print (mi_cont (data[,1], data[,2], 3, 'ksg1'))
+#' print (mi_cont (data[,1], data[,2], 3, 'ksg2'))
 
- mi_cont <- function (df, k = 3, algo = 'ksg1')
+ mi_cont <- function (X, Y, k = 3, algo = 'ksg1')
  {
-    #Info =  Module ('InfoEntropy', PACKAGE = "NlinTS")
+    df = data.frame (X, Y)
     M = t(df)
     v = .Info $ mutualInformation_cont (M, k, algo);
     return (v);
@@ -265,15 +266,15 @@ te_disc <- function (X, Y, p = 1, q = 1, log = "log2", normalize = FALSE)
 
 #' Continuous  Transfer Entropy
 #'
-#' @details Computes the continuous Transfer Entropy from the second time series to the one using the Kraskov approximation.
+#' @details Computes the continuous Transfer Entropy from the second time series to the one using the Kraskov estimation
 #' @param X Integer vector, first time series.
 #' @param Y Integer vector, the second time series.
 #' @param p Integer, the lag parameter to use for the first vector, (p = 1 by default).
 #' @param q Integer the lag parameter to use for the first vector, (q = 1 by default).
-#' @param k  Integer argument, the number of neighbours.
+#' @param k  Integer argument, the number of neighbors.
 #' @param normalize Logical argument  for the option of normalizing value of TE (transfer entropy) (FALSE by default).
 #' This normalization is different from the discrete case, because, here the term H (X(t)| X(t-1), ..., X(t-p)) may be negative.
-#' Consequently, to get the normalized TE (NTE), we divide TE by H0 - H (X(t)| X(t-1), ..., X(t-p)), where H0 is the entropy of X.
+#' Consequently, we use another technique, we divide TE by H0 - H (X(t)| X(t-1), ..., X(t-p), Yt-1), ..., Y(t-q)), where H0 is the max entropy (of uniform distribution).
 #' @references{
 #'   \insertRef{kraskov2004estimating}{NlinTS}
 #' }

@@ -315,7 +315,7 @@ double entropy (const VectDouble & V, int k)
 	double E = 0;
 	unsigned N = V. size ();
 	double sum = 0;
-	double cd = 2;
+	double cd = 1;
 
 	VectDouble distances = kNearest (V, k);
 
@@ -323,7 +323,7 @@ double entropy (const VectDouble & V, int k)
 		sum += myLOG (2 * distances [i], "log2");
 
 	sum = sum / N; 
-	E = digamma (N) - digamma (k) +  sum  + myLOG (cd, "log2"); // + log2 (cd) ;// + sum;
+	E = digamma (N) - digamma (k) +  sum  + myLOG (cd, "log2"); 
 	return E ;
 }
 
@@ -347,7 +347,43 @@ double joinEntropy (const MatDouble & M, int k)
 	return E ;
 }
 
+/*******************************************************/
+VectInt nbOfNeighborsInRectangle (const MatDouble & X, const MatDouble X1, const MatDouble X2, 
+						           const VectDouble & distances)
+{
+	unsigned N = X. size ();
+	VectInt Nx (N, 0);
 
+	double dLocalx, dLocaly, dx, dy;
+
+	for (unsigned i = 0 ; i < N; ++i)
+	{
+		dx = 0;
+		dy = 0;
+		// Compute dx and dy : edge lengths of the hyper-rectangle
+		for (unsigned j = 0 ; j < N; ++j)
+		{
+			dLocalx = dist (X1[i], X1[j]);
+			dLocaly = dist (X2[i], X2[j]);
+
+			if (dist (X[i], X[j]) <= distances [i] and j != i)
+			{
+				if (dx < dLocalx)
+					dx = dLocalx;
+				if (dy < dLocaly)
+					dy = dLocaly;
+			}
+		}
+
+		// Count the number of points in the hyper-rectangle
+		for (unsigned j = 0 ; j < N; ++j)
+		{
+			if (dist (X1[i], X1[j]) <= (2 * dx) and  dist (X2[i], X2[j]) <= (2 * dy) )
+					Nx[i] += 1;
+		}
+	}
+	return Nx;
+}
 
 /*****************************************************/
 double mutualInformation (const MatDouble & M, int k, string alg)
@@ -357,16 +393,17 @@ double mutualInformation (const MatDouble & M, int k, string alg)
 	double sum = 0;
 
 	VectInt NX, NY;
+	VectDouble X, Y;
+	X = getCol (M, 0);
+	Y = getCol (M, 1);
 
-	VectDouble radius = kNearest (M, k);
-	//show (radius);
-	//NX = computeNbOfNeighbors (getCol (M, 0), distances);
-	//NY = computeNbOfNeighbors (getCol (M, 1), distances);
+	VectDouble distances = kNearest (M, k);
+
 
 	if (alg == "ksg1")
 	{
-		NX = computeNbOfNeighbors (getCol (M, 0), radius, true);
-		NY = computeNbOfNeighbors (getCol (M, 1), radius, true);
+		NX = computeNbOfNeighbors (X, distances, false);
+		NY = computeNbOfNeighbors (Y, distances, false);
 
 		for (unsigned i = 0; i < N; i ++)
 			sum += digamma (NX[i] + 1) + digamma (NY[i] + 1);
@@ -377,8 +414,10 @@ double mutualInformation (const MatDouble & M, int k, string alg)
 
 	else if (alg == "ksg2")
 	{
-		NX = computeNbOfNeighbors (getCol (M, 0), radius, true);
-		NY = computeNbOfNeighbors (getCol (M, 1), radius, true);
+		VectDouble distances_x = kNearest (X, k);
+		VectDouble distances_y = kNearest (Y, k);
+		NX = computeNbOfNeighbors (X, distances_x, true);
+		NY = computeNbOfNeighbors (Y, distances_y, true);
 
 		for (unsigned i = 0; i < N; i ++)
 			sum += digamma (NX[i]) + digamma (NY[i]);
@@ -442,15 +481,20 @@ double transferEntropy (const VectDouble & X, const VectDouble & Y, int p, int q
 		
 	if (normalize == true)
 	{
-		// Compute H(Xp|Xm), NTE <- TE / (H0 - H(Xp|Xm))
-		double denom = 0;
-		VectDouble Xt = getCol (Xp, 0);
-		VectInt NXt = computeNbOfNeighbors (Xt, distances);
+		// Compute  NTE <- TE / (H0 - H(Xp|Xm,Ym))
+		double denom = 0, H0;
+
+		//VectDouble Xt = getCol (Xp, 0);
+		VectDouble min_max = minMax (X);
+
+		H0 = myLOG (abs (abs(min_max[1]) - abs(min_max[0])) , "loge");
+
+		
 
 		for (unsigned i = 0; i < N; i ++)
-			denom +=  - digamma (NXmYm[i] + 1); //- digamma (NXt[i] + 1);
+			denom +=  myLOG (2*distances[i], "loge") + digamma (NXmYm[i] + 1);
 
-		denom = (denom / N) + digamma (N) ; //+ digamma (k);;
+		denom = H0 - ( (denom / N) - digamma (k) );
 
 		te = te / denom;
 	}
@@ -458,42 +502,7 @@ double transferEntropy (const VectDouble & X, const VectDouble & Y, int p, int q
 	return te;
 }
 
-VectInt nbOfNeighborsInRectangle (const MatDouble & X, const MatDouble X1, const MatDouble X2, 
-						           const VectDouble & distances)
-{
-	unsigned N = X. size ();
-	VectInt Nx (N, 0);
 
-	double dLocalx, dLocaly, dx, dy;
-
-	for (unsigned i = 0 ; i < N; ++i)
-	{
-		dx = 0;
-		dy = 0;
-		// Compute dx and dy : edge lengths of the hyper-rectangle
-		for (unsigned j = 0 ; j < N; ++j)
-		{
-			dLocalx = dist (X1[i], X1[j]);
-			dLocaly = dist (X2[i], X2[j]);
-
-			if (dist (X[i], X[j]) <= distances [i] and j != i)
-			{
-				if (dx < dLocalx)
-					dx = dLocalx;
-				if (dy < dLocaly)
-					dy = dLocaly;
-			}
-		}
-
-		// Count the number of points in the hyper-rectangle
-		for (unsigned j = 0 ; j < N; ++j)
-		{
-			if (dist (X1[i], X1[j]) <= (2 * dx) and  dist (X2[i], X2[j]) <= (2 * dy) )
-					Nx[i] += 1;
-		}
-	}
-	return Nx;
-}
 /**************************************************************************/
 double transferEntropy_ksg (const VectDouble & X, const VectDouble & Y, int p, int q, int k)
 {

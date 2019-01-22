@@ -84,14 +84,6 @@ VectInt computeNbOfNeighbors (const vector<type> & X, VectDouble radius, bool eq
 VectInt nbOfNeighborsInRectangle (const MatDouble & X, const MatDouble X1, const MatDouble X2, 
 						           const VectDouble & distances);
 
-/*template <class type>
-double kNearest (const vector<type> & V, MatDouble distMat, unsigned i, int k)
-{
-	VectDouble distances = distMat[i];
-	std::sort (distances.begin(), distances.end());
-
-	return distances [k];
-}*/
 
 /*********************************************************/
 template <class type>
@@ -118,13 +110,11 @@ vector<double> kNearest (const vector<type> & V, int k)
 {
 	MatDouble distMat = distanceMatrix (V);
 	vector<double> result (V.size ());
-	//VectDouble distances;
 
-	for (unsigned i = 0; i < V. size (); i++){
-			//distances = distMat[i];
+	for (unsigned i = 0; i < V. size (); i++)
+	{
 			std::sort (distMat[i].begin(), distMat[i].end());
 			result [i] = distMat[i][k];
-			//result [i] = kNearest (V, distMat, i, k);
 	}
 
 	return result;

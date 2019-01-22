@@ -9,7 +9,7 @@ entropy_cont(V, k = 3)
 \arguments{
 \item{V}{Interger vector.}
 
-\item{k}{Integer argument, the number of neighbours.}
+\item{k}{Integer argument, the number of neighbors.}
 }
 \description{
 Continuous  entropy

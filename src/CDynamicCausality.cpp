@@ -123,7 +123,7 @@ DynamicCausalityTest::DynamicCausalityTest (Rcpp::NumericVector  ts1_,
     else 
     {
     /* F test */
-    Ftest = ((RSS0 - RSS1) / RSS1) *  ( (double) d1 / (double) d2 );
+    Ftest = ((RSS0 - RSS1) / RSS1) *  ( (double) d2 / (double) d1 );
 
     /* p-value of the F-test */
     p_value = getPvalue (Ftest , d1 , d2);
