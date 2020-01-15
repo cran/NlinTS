@@ -4,7 +4,8 @@
 \alias{nlin_causality.test}
 \title{A non linear Granger causality test}
 \usage{
-nlin_causality.test(ts1, ts2, lag, LayersUniv, LayersBiv, iters, bias = TRUE)
+nlin_causality.test(ts1, ts2, lag, LayersUniv, LayersBiv,
+ 		    iters, bias = TRUE)
 }
 \arguments{
 \item{ts1}{Numerical series.}
@@ -41,6 +42,6 @@ library (timeSeries) # to extract time series
 library (NlinTS)
 data = LPP2005REC
 # We construct the model based
-model = nlin_causality.test (data[,1], data[,2], 2, c(2, 2), c(4, 4), 500, TRUE)
+model = nlin_causality.test(data[,1], data[,2], 2, c(2,2), c(4,4), 500)
 model$summary ()
 }

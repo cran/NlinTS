@@ -16,7 +16,7 @@ double CVDouble::Mean () const //throw (Exception)
     for (auto it = this->begin() ; it!= this->end() ; ++it)
         Sum += (*it);
     return Sum / this->size();
-  };
+  }
 /***********************************************************************************/
 bool CVDouble::Contains (unsigned & x)
 {
@@ -61,7 +61,7 @@ double CVDouble::StdDev () const //throw (Exception)
         Sum += pow (*it - Mean, 2);
     }
     return sqrt(Sum / (this->size ()));
-};
+}
 
 /***********************************************************************************/
 
@@ -74,7 +74,7 @@ double CVDouble::Min () const //throw (Exception)
          if ( *Val < min)
              min = *Val;
      return min;
-};
+}
 
 /***********************************************************************************/
 
@@ -87,7 +87,7 @@ double CVDouble::Max () const //throw (Exception)
          if (*Val > max)
              max = *Val;
      return max;
-};
+}
 
 /***********************************************************************************/
 
@@ -100,7 +100,7 @@ void   CVDouble::Standardise () //throw (Exception)
       for (auto it = this->begin () ; it != this->end () ; ++it)
          (*it) = ((*it) - Mean);
 
-};
+}
 
 /***********************************************************************************/
 void   CVDouble::Normalise () //throw (Exception)
@@ -117,7 +117,7 @@ void   CVDouble::Normalise () //throw (Exception)
             (*it) = (*it) / Min;
 
 
-};
+}
 
 /***********************************************************************************/
 
@@ -130,20 +130,20 @@ void CVDouble::Add  (double & m)
 /***********************************************************************************/
 
 void CMatDouble::Init_Mat( const vector< vector <double> > & M)
-    {
-        unsigned int i,j;
-        this->clear ();
-        unsigned int Nblign = M.size ();
-        unsigned int NbColumn = M[0].size () - 1;
+  {
+      unsigned int i,j;
+      this->clear ();
+      unsigned int Nblign = M.size ();
+      unsigned int NbColumn = M[0].size () - 1;
 
-        this->resize (NbColumn);
-        for( j = 0 ; j < NbColumn ; ++j)
-          {
-            (*this) [j] = CVDouble (Nblign);
-            for( i = 0 ; i < Nblign  ; ++i)
-                (*this) [j][i] = M[i][j+1];
-          }
-    };
+      this->resize (NbColumn);
+      for( j = 0 ; j < NbColumn ; ++j)
+        {
+          (*this) [j] = CVDouble (Nblign);
+          for( i = 0 ; i < Nblign  ; ++i)
+              (*this) [j][i] = M[i][j+1];
+        }
+  }
 
 /***********************************************************************************/
 
@@ -164,26 +164,26 @@ bool CVDouble::NBR_NAN() const
 
 // Interpolation x(t) = x(t-1)
 void CMatDouble::Interpol () //throw (Exception)
+{
+   if (this->size () == 0)
+       throw Exception ("Vector of size null");
+   double moy ;
+   CVDouble T ;
+   for (auto it = this->begin () ; it!= this->end () ; ++it)
    {
-       if (this->size () == 0)
-           throw Exception ("Vector of size null");
-       double moy ;
-       CVDouble T ;
-       for (auto it = this->begin () ; it!= this->end () ; ++it)
+       if(it->NBR_NAN() == 0)
        {
-           if(it->NBR_NAN() == 0)
-           {
-               moy = it->CMean ();
+           moy = it->CMean ();
 
-               if (std::isnan(*(it->begin ())))
-                   *(it->begin ()) = moy;
+           if (std::isnan(*(it->begin ())))
+               *(it->begin ()) = moy;
 
-               for (auto val = it->begin () + 1 ; val!= it->end () ; ++val)
-                   if (std::isnan(*val))
-                       *val = *(val - 1);
-               }
+           for (auto val = it->begin () + 1 ; val!= it->end () ; ++val)
+               if (std::isnan(*val))
+                   *val = *(val - 1);
            }
        }
+   }
 /***********************************************************************************/
 
 void CMatDouble::Standardise ()
@@ -197,21 +197,21 @@ CMatDouble CMatDouble::Normalise ()
 {
     if (this->size () == 0)
         throw Exception ("Matrix of size null");
-    
+
     double min, max;
     CMatDouble minMax (2);
-    
+
     for (auto Vect = this->begin () ; Vect != this->end () ; ++Vect)
     {
         min = Vect->Min ();
         max = Vect->Max ();
         minMax[0].push_back  (min);
         minMax[1].push_back  (max);
-        
+
         for (auto it = Vect->begin () ; it != Vect->end () ; ++it)
             (*it) = ((*it) - min) / (max - min);
     }
-    
+
     return (minMax);
 }
 
@@ -255,7 +255,7 @@ void permute( CVDouble &X , CVDouble &Y)
         Y[k] = a;
     }
 
-};
+}
 
 /***********************************************************************************/
 
@@ -288,7 +288,7 @@ bool Trig (CMatDouble & A ,  CMatDouble & B)
             }
      // Affectation du pivot
       pivot = A[k][k];
-    
+
         if( pivot == 0 )
           {
              return 0;
@@ -311,7 +311,7 @@ bool Trig (CMatDouble & A ,  CMatDouble & B)
           {
             return 0;
           }
- 
+
     B = Trans(B);
     return 1;
 }
@@ -414,9 +414,9 @@ bool Inverse ( const CMatDouble & B, CMatDouble & M) //throw (Exception)
             //throw Exception ("Singular matrix");
             return 0;
         }
-        
+
         I.clear ();
-    
+
     return 1;
 }
 
@@ -479,8 +479,8 @@ double Quartil_3 (const CVDouble &T)
     return Q3;
 }
 /************************************************************************/
-    
-/* detects outliers in a numeric column 
+
+/* detects outliers in a numeric column
  * using box-plot method
  * and replace them with NULL
  */
@@ -489,7 +489,7 @@ void boxPlotOutliersDetection (CMatDouble & M,
 {
     double Q1, Q3, LU, LF;
     for (auto cVec = M.begin () ; cVec != M.end () ; ++cVec)
-     {       
+     {
         Q1 =  Quartil_1 (*cVec);
         Q3 =  Quartil_3 (*cVec);
 
@@ -505,7 +505,7 @@ void boxPlotOutliersDetection (CMatDouble & M,
                 }
             }
        }
-};
+}
 /************************************************************************/
 
 /* detects outliers in a numeric column

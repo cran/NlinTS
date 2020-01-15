@@ -2,7 +2,7 @@
  * Operations.h
  *   Purpose: Calculates matrix and vectors multiplications.
  * @authors Hmamouche Youssef
- * @date 2016 
+ * @date 2016
  **/
 
 #ifndef OPERATEURS_H
@@ -22,7 +22,7 @@ using namespace Struct;
     @param B the second vector.
     @param Res the vector where tu put the result.
 */
-void MultCVDouble (const CVDouble & A, const CVDouble & B, CVDouble & Res); 
+void MultCVDouble (const CVDouble & A, const CVDouble & B, CVDouble & Res);
 
 /**
     Compute a matrix-vector multiplication.
@@ -31,8 +31,8 @@ void MultCVDouble (const CVDouble & A, const CVDouble & B, CVDouble & Res);
     @param B the  vector.
     @param Res the vector where tu put the result.
 */
-void MultCVDouble (const CMatDouble & A, const CVDouble & B, CVDouble & Res); 
-;
+void MultCVDouble (const CMatDouble & A, const CVDouble & B, CVDouble & Res);
+
 
 /**
     Compute a matrix-matrix multiplication.
@@ -41,6 +41,6 @@ void MultCVDouble (const CMatDouble & A, const CVDouble & B, CVDouble & Res);
     @param B the second matrix.
     @param Res the matrix where tu put the result.
 */
-void MultCVDouble (const CMatDouble & A, const CMatDouble & B, CMatDouble & Res); 
+void MultCVDouble (const CMatDouble & A, const CMatDouble & B, CMatDouble & Res);
 
 #endif // OPERATEURS_H

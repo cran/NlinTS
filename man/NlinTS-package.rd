@@ -3,7 +3,7 @@
 \alias{NlinTS}
 \docType{package}
 \title{
-Models for non-linear time series analysis.
+Models for non-linear causality detection in time series.
 }
 \description{
 Globally, this package focuses on non-linear time series analysis,  especially on causality detection.

@@ -11,7 +11,7 @@ library (Rdpack)
 
 .dynCaus.test <-  Module ('NlinCausalityTest', PACKAGE = "NlinTS")
 
- 
+
 .df.test <-  Module ('DickeyFuller', PACKAGE = "NlinTS")
 
 .onLoad <- function(libname, pkgname) {
@@ -34,14 +34,12 @@ library (Rdpack)
 #' library (NlinTS)
 #' #load data
 #' data = LPP2005REC
-#' # Prepare data to make one forecasts
-#' train_data = head (data, nrow (data) - 1)
-#' test_data = tail (data, 1)
+#' # Predict the last row of the data
+#' train_data = data[1:(nrow (data) - 1), ]
 #' model = varmlp (train_data, 1, c(10,5), 200, TRUE)
 #' predictions = model$forecast (train_data)
-#' print (tail (predictions,1))
-#' # Update the model (learning from new data)
-#' model$train (test_data)
+#' print (predictions[nrow (predictions),])
+
 varmlp <- function(df, lag, sizeOfHLayers, iters, bias = TRUE){
     #neuralNet =  Module ('VAR_MLP', PACKAGE = "NlinTS")
     varp = .neuralNet$VAR_MLP
@@ -98,12 +96,12 @@ causality.test <- function(ts1,ts2, lag, diff = FALSE){
 #' library (NlinTS)
 #' data = LPP2005REC
 #' # We construct the model based
-#' model = nlin_causality.test (data[,1], data[,2], 2, c(2, 2), c(4, 4), 500, TRUE)
+#' model = nlin_causality.test(data[,1], data[,2], 2, c(2,2), c(4,4), 500)
 #' model$summary ()
 
-nlin_causality.test <- function(ts1,ts2, lag,LayersUniv, LayersBiv, iters, bias=TRUE)
+nlin_causality.test <- function (ts1,ts2,lag,LayersUniv,LayersBiv,iters,bias=TRUE)
 {
-    #dynCaus.test =  Module ('NlinCausalityTest', PACKAGE = "NlinTS") 
+    #dynCaus.test =  Module ('NlinCausalityTest', PACKAGE = "NlinTS")
     test0 = .dynCaus.test $ DynamicCausalityTest ;
     v = new (test0, ts1,ts2, lag, LayersUniv, LayersBiv, iters, bias) ;
     return (v) ;
@@ -214,7 +212,7 @@ te_disc <- function (X, Y, p = 1, q = 1, log = "log2", normalize = FALSE)
     return (v);
 }
 
-#' Continuous  entropy 
+#' Continuous  entropy
 #'
 #' @details Computes the continuous entropy of a numerical vector using the Kozachenko approximation.
 #' @param V  Interger vector.
@@ -292,8 +290,3 @@ te_disc <- function (X, Y, p = 1, q = 1, log = "log2", normalize = FALSE)
      v = .Info $ transferEntropy_cont (X, Y, p, q, k, normalize);
      return (v);
  }
-
-
-
-
-

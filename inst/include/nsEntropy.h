@@ -81,7 +81,7 @@ VectInt computeNbOfNeighbors (const vector<type> & X, VectDouble radius, bool eq
 }
 
 /*********************************************************/
-VectInt nbOfNeighborsInRectangle (const MatDouble & X, const MatDouble X1, const MatDouble X2, 
+VectInt nbOfNeighborsInRectangle (const MatDouble & X, const MatDouble X1, const MatDouble X2,
 						           const VectDouble & distances);
 
 
@@ -94,7 +94,7 @@ MatDouble distanceMatrix (const vector <type> & V)
 
 	for (unsigned i = 0; i < n; i++)
 		M[i]. resize (n, 0);
-	
+
 	for (unsigned i = 0; i < n - 1; i++)
 		for (unsigned j = i + 1; j < n; j++){
 			M[i][j] = dist (V[i], V[j]);
@@ -102,7 +102,7 @@ MatDouble distanceMatrix (const vector <type> & V)
 		}
 
 	return M;
-};
+}
 
  /*********************************************************/
 template <class type>
@@ -131,11 +131,11 @@ vector<vector<type>> lagg (const vector<type> & V, unsigned  p, bool c = 0)
     vector<vector<type>> M (N - p);
     for (unsigned j = 0 ; j < N - p ; j++)
     	M[j]. resize (p + c, 0);
-   
+
     for (unsigned i = 0 ; i < N - p ; i++)
-    	for (unsigned j = 0; j < p + c ; ++j)   
-    		M[i][j] = V[i + (p - 1 + c) - j];	    
-    
+    	for (unsigned j = 0; j < p + c ; ++j)
+    		M[i][j] = V[i + (p - 1 + c) - j];
+
     return M;
 }
 
@@ -150,7 +150,7 @@ vector<vector<type>> getCols (const vector<vector<type>> & M, const vector<type>
 				SmallM[i]. push_back (M[i][idx]);
 
 	return SmallM;
-};
+}
 
 /*********************************************************/
 template <class type>
@@ -162,7 +162,7 @@ vector<type> getCol (const vector<vector<type>> & M, int col)
 				Vec[i] =  M[i][col];
 
 	return Vec;
-};
+}
 
 /*********************************************************/
 template <class type>
@@ -176,7 +176,7 @@ template <class type>
 void showM (const std::vector<std::vector<type>> & Vect){
 	for (auto & val:Vect)
 		show (val);
-	std::cout << std::endl;} 
+	std::cout << std::endl;}
 }
 
 

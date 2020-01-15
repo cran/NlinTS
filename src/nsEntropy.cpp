@@ -29,21 +29,21 @@ double digamma (double x)
   double a = 0, b, c;
 
 
-  while (x <= 5) 
-  { 
+  while (x <= 5)
+  {
     a -= 1 / x;
     x += 1;
   }
 
   b = 1 / (x * x);
 
-  c = b * (-1/12.0 + 
-      b * (1/120.0 + 
-      b * (-1/252.0 + 
-      b * (1/240.0 + 
+  c = b * (-1/12.0 +
+      b * (1/120.0 +
+      b * (-1/252.0 +
+      b * (1/240.0 +
       b * (-1/132.0 +
-      b * (691/32760.0 + 
-      b * (-1/12.0 + 
+      b * (691/32760.0 +
+      b * (-1/12.0 +
       b * 3617/8160.0)))))));
 
   return (a + log (x) - 0.5 / x + c);
@@ -97,7 +97,7 @@ vector<int> count (const std::vector<int> & X)
 	std::vector<int> Vect (X);
 	std::vector<int>::iterator it;
 	std::sort (Vect.begin(), Vect.end());
-	it = std::unique (Vect. begin (), Vect. end ()); 
+	it = std::unique (Vect. begin (), Vect. end ());
 
 		// Distinct values
 	Vect.resize (std::distance (Vect.begin(), it));
@@ -110,7 +110,7 @@ MatInt count (const MatInt & X)
 	vector<vector<int>> Vect (X);
 	vector<vector<int>>::iterator it;
 	std::sort (Vect.begin(), Vect.end());
-	it = std::unique (Vect. begin (), Vect. end ()); 
+	it = std::unique (Vect. begin (), Vect. end ());
 
 		// Distinct values
 	Vect.resize (std::distance (Vect.begin(), it));
@@ -138,7 +138,7 @@ double joinProba (MatInt Y, VectInt y)
 	for (unsigned i = 0; i < Y.size (); ++i)
 	{
 		for (j = 0; j < Y [0] .size (); ++j)
-			if (Y[i][j] != y[j]) break;	
+			if (Y[i][j] != y[j]) break;
 
 		if (j == Y [0].size ())
 			J++;
@@ -172,7 +172,7 @@ double entropy (const VectInt & X, string base)
 			if (x > 0)
 				E += x  * myLOG (x, base) ;
 	}
-	
+
 	return -E;
 }
 /*****************************************************/
@@ -207,7 +207,7 @@ double joinEntropy (const MatInt & Mat, string base)
 	MatInt tuples = count (Mat);
 
 	for (auto tuple : tuples)
-	{			
+	{
 		x = joinProba (Mat, tuple);
 		if (x > 0)
 			J += x  * myLOG (x, base);
@@ -294,7 +294,7 @@ double transferEntropy (const VectInt & X, const VectInt & Y, int p, int q, std:
 
 double dist (double x, double y) {
 	return abs (x - y);
-};
+}
 
 double dist (VectDouble X, VectDouble Y)
 {
@@ -305,7 +305,7 @@ double dist (VectDouble X, VectDouble Y)
 			distance = abs (X[i] - Y[i]);
 		}
 	return  distance;
-};
+}
 
 
  /*********************************************************/
@@ -322,8 +322,8 @@ double entropy (const VectDouble & V, int k)
 	for (unsigned i = 0; i < N; i ++)
 		sum += myLOG (2 * distances [i], "log2");
 
-	sum = sum / N; 
-	E = digamma (N) - digamma (k) +  sum  + myLOG (cd, "log2"); 
+	sum = sum / N;
+	E = digamma (N) - digamma (k) +  sum  + myLOG (cd, "log2");
 	return E ;
 }
 
@@ -341,14 +341,14 @@ double joinEntropy (const MatDouble & M, int k)
 	for (unsigned i = 0; i < N; i ++)
 		sum += myLOG (2 * distances [i], "loge");
 
-	sum = sum * d / N; 
+	sum = sum * d / N;
 
 	E = digamma (N) - digamma (k) +  sum ;
 	return E ;
 }
 
 /*******************************************************/
-VectInt nbOfNeighborsInRectangle (const MatDouble & X, const MatDouble X1, const MatDouble X2, 
+VectInt nbOfNeighborsInRectangle (const MatDouble & X, const MatDouble X1, const MatDouble X2,
 						           const VectDouble & distances)
 {
 	unsigned N = X. size ();
@@ -408,7 +408,7 @@ double mutualInformation (const MatDouble & M, int k, string alg)
 		for (unsigned i = 0; i < N; i ++)
 			sum += digamma (NX[i] + 1) + digamma (NY[i] + 1);
 
-		sum = sum  / N; 
+		sum = sum  / N;
 		mi = digamma (k) + digamma (N) - sum;
 	}
 
@@ -422,7 +422,7 @@ double mutualInformation (const MatDouble & M, int k, string alg)
 		for (unsigned i = 0; i < N; i ++)
 			sum += digamma (NX[i]) + digamma (NY[i]);
 
-		sum = sum  / N; 
+		sum = sum  / N;
 		mi = digamma (k) - (1.0 / k) + digamma (N) - sum;
 	}
 
@@ -438,7 +438,7 @@ double transferEntropy (const VectDouble & X, const VectDouble & Y, int p, int q
 
 
 	MatDouble Xm, Xp, Ym, XpYm, XmYm;
-	VectInt NXm, NXmYm, NXpYm, NXp; 
+	VectInt NXm, NXmYm, NXpYm, NXp;
 
 	Xm = lagg (X, p, 0);
 	Ym = lagg (Y, q);
@@ -478,7 +478,7 @@ double transferEntropy (const VectDouble & X, const VectDouble & Y, int p, int q
 
 	te = digamma (k) + (sum / N) ;
 
-		
+
 	if (normalize == true)
 	{
 		// Compute  NTE <- TE / (H0 - H(Xp|Xm,Ym))
@@ -489,7 +489,7 @@ double transferEntropy (const VectDouble & X, const VectDouble & Y, int p, int q
 
 		H0 = myLOG (abs (abs(min_max[1]) - abs(min_max[0])) , "loge");
 
-		
+
 
 		for (unsigned i = 0; i < N; i ++)
 			denom +=  myLOG (2*distances[i], "loge") + digamma (NXmYm[i] + 1);
@@ -508,8 +508,8 @@ double transferEntropy_ksg (const VectDouble & X, const VectDouble & Y, int p, i
 {
 	double te, sum = 0;
 
-	VectInt NXm, NXmYm, NXpYm; 
-	MatDouble Xm, Ym, XpYm, XmYm, Xp;	
+	VectInt NXm, NXmYm, NXpYm;
+	MatDouble Xm, Ym, XpYm, XmYm, Xp;
 
 	Xm = lagg (X, p, 0);
 	Ym = lagg (Y, q);
@@ -555,29 +555,3 @@ double transferEntropy_ksg (const VectDouble & X, const VectDouble & Y, int p, i
 }
 
 } // end namespace
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
