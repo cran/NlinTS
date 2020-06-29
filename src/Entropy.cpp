@@ -1,3 +1,11 @@
+/*
+ * This file is part of NlinTS package.
+ *.
+ * See the COPYRIGHT file at the top-level directory of this distribution
+ * for details of code ownership.
+ *
+ */
+
 #include "../inst/include/Entropy.h"
 #include "../inst/include/nsEntropy.h"
 #include "../inst/include/Exception.h"
@@ -5,7 +13,7 @@
 using namespace Rcpp;
 
 /************************************************************/
-double entropy_disc (IntegerVector  & I, std::string log) 
+double entropy_disc (IntegerVector  & I, std::string log)
 {
 
   if (I.size() == 0)
@@ -20,35 +28,47 @@ double entropy_disc (IntegerVector  & I, std::string log)
 }
 
 /************************************************************/
-double mutualInformation_disc_u (IntegerVector  & I,  IntegerVector  & J, std::string log)
-{
-	
-  if (I.size() != J.size())
-            throw string ("Error: The variables have not the same length.");
-
-  if (I.size() == 0)
-            throw string ("Error: the data are empty.");
-
-  std::vector<int>  X, Y;
-
-	for (const auto val : I)
-        	X.push_back (val);
-
-    for (const auto val : J)
-        	Y.push_back (val);
-
-    double mi = nsEntropy::mutualInformation (X, Y, log);
-    return mi;
-}
-/************************************************************/
-double mutualInformation_disc (Rcpp::DataFrame & Df, std::string log)
+double joinEntropy_disc (Rcpp::DataFrame & Df, std::string log)
 {
     vector<vector<int> > X = Rcpp::as < vector<vector<int> > > (Df);
 
     if (X.size() == 0)
             throw string ("Error: the data are empty.");
 
-    double mi = nsEntropy::mutualInformation (X, log);
+    double je = nsEntropy::joinEntropy (X, log);
+    return je;
+}
+
+/************************************************************/
+double mutualInformation_disc_u (IntegerVector  & I,  IntegerVector  & J, std::string log, bool normalize)
+{
+    if (I.size() != J.size())
+              throw string ("Error: The variables have not the same length.");
+
+    if (I.size() == 0)
+              throw string ("Error: the data are empty.");
+
+    std::vector<int>  X, Y;
+
+  	for (const auto val : I)
+          	X.push_back (val);
+
+      for (const auto val : J)
+          	Y.push_back (val);
+
+      double mi = nsEntropy::mutualInformation (X, Y, log, normalize);
+      return mi;
+}
+
+/************************************************************/
+double mutualInformation_disc (Rcpp::DataFrame & Df, std::string log, bool normalize)
+{
+    vector<vector<int> > X = Rcpp::as < vector<vector<int> > > (Df);
+
+    if (X.size() == 0)
+            throw string ("Error: the data are empty.");
+
+    double mi = nsEntropy::mutualInformation (X, log, normalize);
     return mi;
 }
 
@@ -71,7 +91,7 @@ double transferEntropy_disc (Rcpp::IntegerVector & I, Rcpp::IntegerVector & J, i
 
     if (I.size() == 0)
             throw string ("Error: the data are empty.");
-        
+
     std::vector<int>  X, Y;
 
     for (const auto val : I)
@@ -86,7 +106,7 @@ double transferEntropy_disc (Rcpp::IntegerVector & I, Rcpp::IntegerVector & J, i
 
 
 //-------------------------------------------------------------//
-double entropy_cont ( Rcpp::NumericVector & I, int k)
+double entropy_cont ( Rcpp::NumericVector & I, int k, std::string log)
 {
     if (I.size() == 0)
             throw string ("Error: the data are empty.");
@@ -95,20 +115,20 @@ double entropy_cont ( Rcpp::NumericVector & I, int k)
     for (const auto val : I)
             X.push_back (val);
 
-    double e = nsEntropy::entropy (X, k);
+    double e = nsEntropy::entropy (X, k, log);
     return e;
 
 }
 
 //-------------------------------------------------------------//
-double mutualInformation_cont ( Rcpp::DataFrame & Df, int k, std::string alg)
+double mutualInformation_cont ( Rcpp::DataFrame & Df, int k, std::string alg, bool normalize)
 {
     vector<vector<double> > X = Rcpp::as < vector<vector<double> > > (Df);
 
     if (X.size() == 0)
             throw string ("Error: the data are empty.");
 
-    double mi = nsEntropy::mutualInformation (X, k, alg);
+    double mi = nsEntropy::mutualInformation (X, k, alg, normalize);
     return mi;
 }
 
@@ -116,7 +136,7 @@ double mutualInformation_cont ( Rcpp::DataFrame & Df, int k, std::string alg)
 // Transfer of information from J to I
 double transferEntropy_cont ( NumericVector & I,  NumericVector & J, int p, int q, int k, bool normalize)
 {
-    
+
     try {
           if (p <= 0 or q <= 0)
               throw string ("Error: The lag value is incorrect, try strictly positive values.");

@@ -28,7 +28,7 @@ summary ():  shows the test results.
 The Granger causality test
 }
 \details{
-The test evaluates if the second time series causes the first one using the Granger test of causality.
+This is the classical Granger test of causality. The null hypothesis is that the second time series does not cause the first one
 }
 \examples{
 library (timeSeries) # to extract time series

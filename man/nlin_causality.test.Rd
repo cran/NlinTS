@@ -4,8 +4,7 @@
 \alias{nlin_causality.test}
 \title{A non linear Granger causality test}
 \usage{
-nlin_causality.test(ts1, ts2, lag, LayersUniv, LayersBiv,
- 		    iters, bias = TRUE)
+nlin_causality.test(ts1, ts2, lag, LayersUniv, LayersBiv, iters, bias = TRUE)
 }
 \arguments{
 \item{ts1}{Numerical series.}
@@ -35,7 +34,7 @@ summary ():  shows the test results.
 A non linear Granger causality test
 }
 \details{
-The test evaluates if the second time series causes the first one. Two MLP artificial neural networks are evaluated to perform the test, one using just the target time series (ts1), and the second using both time series.
+A non-linear test of causality using artificial neural networks. Two MLP artificial neural networks are evaluated to perform the test, one using just the target time series (ts1), and the second using both time series. The null hypothesis of this test is that the second time series does not cause the first one.
 }
 \examples{
 library (timeSeries) # to extract time series

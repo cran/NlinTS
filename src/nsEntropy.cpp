@@ -11,23 +11,25 @@ using namespace std;
 
 namespace nsEntropy {
 
-double myLOG (double x, std::string base)
+double myLOG (double x, std::string log)
 {
-  if (base == "loge")
+  if (x == 0)
+	return 0;
+
+  if (log == "loge")
     return (log2 (x) / log2(EXP));
-  else if (base == "log10")
+  else if (log == "log10")
     return (log2 (x) / log2(10));
-  else if (base == "log2")
+  else if (log == "log2")
     return log2 (x);
   else
     return log2 (x);
 }
 
-
+/*****************************************************/
 double digamma (double x)
 {
   double a = 0, b, c;
-
 
   while (x <= 5)
   {
@@ -47,8 +49,10 @@ double digamma (double x)
       b * 3617/8160.0)))))));
 
   return (a + log (x) - 0.5 / x + c);
+
 }
 
+/*****************************************************/
 	// Min and max values of columns of a matrix
 VectDouble minMax (const VectDouble & vect)
 {
@@ -66,6 +70,7 @@ VectDouble minMax (const VectDouble & vect)
 	}
 	return result;
 }
+/*****************************************************/
 MatDouble minMax (const MatDouble & mat)
 {
 	MatDouble result (mat[0]. size ());
@@ -76,6 +81,7 @@ MatDouble minMax (const MatDouble & mat)
 	return result;
 }
 
+/*****************************************************/
 void normalize (MatDouble & mat)
 {
 	MatDouble min_max = minMax (mat);
@@ -92,6 +98,7 @@ void normalize (MatDouble & mat)
 		}
 }
 
+/*****************************************************/
 vector<int> count (const std::vector<int> & X)
 {
 	std::vector<int> Vect (X);
@@ -160,7 +167,7 @@ double Proba (vector<int> X, int x)
 
 
 /*****************************************************/
-double entropy (const VectInt & X, string base)
+double entropy (const VectInt & X, string log)
 {
 	double E = 0, x;
 
@@ -170,13 +177,14 @@ double entropy (const VectInt & X, string base)
 	{
 			x = Proba (X, Vect[i]);
 			if (x > 0)
-				E += x  * myLOG (x, base) ;
+				E += x  * myLOG (x, log) ;
 	}
 
 	return -E;
 }
-/*****************************************************/
-double joinEntropy (const VectInt & X1, const VectInt & X2, string base)
+
+/****************************/
+double joinEntropy (const VectInt & X1, const VectInt & X2, string log)
 {
 	double J = 0;
 	double x;
@@ -192,14 +200,14 @@ double joinEntropy (const VectInt & X1, const VectInt & X2, string base)
 			x = joinProba (X1, X2, X[i], Y[j]);
 
 			if (x > 0)
-				J += x  * myLOG (x, base);
+				J += x  * myLOG (x, log);
 		}
 	}
 	return -J;
 }
 
 /*****************************************************/
-double joinEntropy (const MatInt & Mat, string base)
+double joinEntropy (const MatInt & Mat, string log)
 {
 	double J = 0;
 	double x;
@@ -210,48 +218,63 @@ double joinEntropy (const MatInt & Mat, string base)
 	{
 		x = joinProba (Mat, tuple);
 		if (x > 0)
-			J += x  * myLOG (x, base);
+			J += x  * myLOG (x, log);
 	}
 	return -J;
 }
 
 /*****************************************************/
-double condEntropy (const VectInt & X, const VectInt & Y, string base)
+double condEntropy (const VectInt & X, const VectInt & Y, string log)
 {
-	return joinEntropy (X, Y, base) - entropy (Y, base);
+	return joinEntropy (X, Y, log) - entropy (Y, log);
 }
 
 /*****************************************************/
-double condEntropy (const VectInt & X, const MatInt & Y, string base)
+double condEntropy (const VectInt & X, const MatInt & Y, string log)
 {
 	MatInt M = Y;
 	M .push_back (X);
 
-	return (joinEntropy (M, base) - joinEntropy (Y, base));
+	return (joinEntropy (M, log) - joinEntropy (Y, log));
 }
 
 /*****************************************************/
-double mutualInformation (const VectInt & X, const VectInt & Y, std::string base)
+double mutualInformation (const VectInt & X, const VectInt & Y, std::string log, bool normalize)
 {
-	return  (entropy (X, base) + entropy (Y, base)  - joinEntropy (X, Y, base));
+  double je = joinEntropy (X, Y, log);
+  double eX = entropy (X, log), eY = entropy (Y, log);
+  double mi = eX + eY  - je;
+
+  if (normalize && max (eX, eY) > 0)
+    mi /= max (eX, eY);
+
+	return  mi;
 }
 
-double mutualInformation (const MatInt & X, std::string base)
+/*****************************************************/
+double mutualInformation (const MatInt & X, std::string log, bool normalize)
 {
-	double mi = 0;
+  double mi = 0, max = 0;
 	VectInt vect;
 
 	for (unsigned i = 0; i < X [0]. size (); ++i)
 	{
 		vect = getCol (X, i);
-		mi += entropy (vect, base);
+		double e = entropy (vect, log);
+		mi += e;
+		if (e > max)
+			max = e;
 	}
 
-	mi -= joinEntropy (X, base);
+	mi -= joinEntropy (X, log);
+
+	if (normalize && (max > 0))
+		mi /= max;
+
 	return  mi;
 }
-
-double transferEntropy (const VectInt & X, const VectInt & Y, int p, int q, std::string base, bool normalize)
+/*****************************************************/
+double transferEntropy (const VectInt & X, const VectInt & Y, int p, int q, std::string log, bool normalize)
 {
 	double te, denom;
 	MatInt Xp, Xm, Ym, XmYm, XpYm;
@@ -279,8 +302,8 @@ double transferEntropy (const VectInt & X, const VectInt & Y, int p, int q, std:
 			XpYm [i]. push_back ( Ym [i][j] );
 		}
 
-	denom = joinEntropy (Xp, base) - joinEntropy (Xm, base);
-	te = denom - joinEntropy (XpYm, base) + joinEntropy (XmYm, base);
+	denom = joinEntropy (Xp, log) - joinEntropy (Xm, log);
+	te = denom - joinEntropy (XpYm, log) + joinEntropy (XmYm, log);
 
 	if (normalize and denom != 0)
 			te = te / denom;
@@ -292,6 +315,7 @@ double transferEntropy (const VectInt & X, const VectInt & Y, int p, int q, std:
 /*--------------- continuous variables ------------------*/
 /*********************************************************/
 
+/*****************************************************/
 double dist (double x, double y) {
 	return abs (x - y);
 }
@@ -310,7 +334,7 @@ double dist (VectDouble X, VectDouble Y)
 
  /*********************************************************/
 
-double entropy (const VectDouble & V, int k)
+double entropy (const VectDouble & V, int k, std::string log)
 {
 	double E = 0;
 	unsigned N = V. size ();
@@ -319,16 +343,20 @@ double entropy (const VectDouble & V, int k)
 
 	VectDouble distances = kNearest (V, k);
 
-	for (unsigned i = 0; i < N; i ++)
-		sum += myLOG (2 * distances [i], "log2");
+
+	for (unsigned i = 0; i < N; i ++){
+		sum += myLOG (2 * distances [i], log);
+		//cout << distances[i] << "   " << log2 (2 * distances [i]) << endl;
+	}
 
 	sum = sum / N;
-	E = digamma (N) - digamma (k) +  sum  + myLOG (cd, "log2");
+
+	E = digamma (N) - digamma (k) +  sum  + myLOG (cd, log);
 	return E ;
 }
 
  /*********************************************************/
-double joinEntropy (const MatDouble & M, int k)
+double joinEntropy (const MatDouble & M, int k, std::string log)
 {
 	double E = 0;
 	unsigned N = M. size ();
@@ -339,7 +367,7 @@ double joinEntropy (const MatDouble & M, int k)
 	VectDouble distances = kNearest (M, k);
 
 	for (unsigned i = 0; i < N; i ++)
-		sum += myLOG (2 * distances [i], "loge");
+		sum += myLOG (2 * distances [i], log);
 
 	sum = sum * d / N;
 
@@ -386,11 +414,15 @@ VectInt nbOfNeighborsInRectangle (const MatDouble & X, const MatDouble X1, const
 }
 
 /*****************************************************/
-double mutualInformation (const MatDouble & M, int k, string alg)
+/* M: array of dimension (x, 2), computing mi between the two columns
+*/
+double mutualInformation (const MatDouble & M, int k, string alg, bool normalize)
 {
 	double mi = 0;
 	unsigned N = M. size ();
 	double sum = 0;
+
+	//cout << "Size: " << N << " " << M[0]. size () << endl;
 
 	VectInt NX, NY;
 	VectDouble X, Y;
@@ -399,17 +431,19 @@ double mutualInformation (const MatDouble & M, int k, string alg)
 
 	VectDouble distances = kNearest (M, k);
 
-
 	if (alg == "ksg1")
 	{
 		NX = computeNbOfNeighbors (X, distances, false);
 		NY = computeNbOfNeighbors (Y, distances, false);
 
-		for (unsigned i = 0; i < N; i ++)
-			sum += digamma (NX[i] + 1) + digamma (NY[i] + 1);
+		for (unsigned i = 0; i < N; i ++){
 
-		sum = sum  / N;
+			sum += digamma (NX[i] + 1) + digamma (NY[i] + 1);
+		}
+
+		sum = sum / N;
 		mi = digamma (k) + digamma (N) - sum;
+
 	}
 
 	else if (alg == "ksg2")
@@ -426,7 +460,16 @@ double mutualInformation (const MatDouble & M, int k, string alg)
 		mi = digamma (k) - (1.0 / k) + digamma (N) - sum;
 	}
 
-
+  // Normalazing mutual information by divide it by the joint entropy
+  if (normalize)
+  {
+    double jointEn = 0;
+    for (double d: distances)
+      jointEn += d;
+    jointEn *= (2.0 / distances. size ());
+    jointEn +=  digamma (N) - digamma (k);
+    mi = mi / jointEn;
+  }
 	return mi;
 }
 

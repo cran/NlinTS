@@ -22,7 +22,6 @@
 using namespace Rcpp ;
 
 RCPP_MODULE (VAR_MLP) {
-
 /* 'The VARMLP module */
   class_<CRcppExport> ("VAR_MLP")
         .constructor <Rcpp::DataFrame, unsigned, Rcpp::IntegerVector, unsigned, bool > ()

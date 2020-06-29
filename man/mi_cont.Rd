@@ -4,7 +4,7 @@
 \alias{mi_cont}
 \title{Continuous  Mutual Information}
 \usage{
-mi_cont(X, Y, k = 3, algo = "ksg1")
+mi_cont(X, Y, k = 3, algo = "ksg1", normalize = FALSE)
 }
 \arguments{
 \item{X}{Integer vector, first time series.}
@@ -13,7 +13,9 @@ mi_cont(X, Y, k = 3, algo = "ksg1")
 
 \item{k}{Integer argument, the number of neighbors.}
 
-\item{algo}{String argument specifies the algorithm use ("ksg1", "ksg2"), as tow propositions of Kraskov estimation are provided. The first one ("ksg1") is used by default}
+\item{algo}{String argument specifies the algorithm use ("ksg1", "ksg2"), as tow propositions of Kraskov estimation are provided. The first one ("ksg1") is used by default.}
+
+\item{normalize}{Logical argument (FALSE by default)  for the option of normalizing the mutual information by dividing it by the joint entropy.}
 }
 \description{
 Continuous  Mutual Information

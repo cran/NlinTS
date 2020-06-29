@@ -21,7 +21,7 @@
 
 /* Update
  * Add bias neurons to each hidden layer and change the input structure.
- * Adapt code to work with Rcpp
+ * Adapt some parts to work with Rcpp
  * by: Youssef Hmamouche 2017-2018
  */
 
@@ -68,28 +68,26 @@ dAvgTestError(0.0)
         ind_bias = 1;
         for (auto & val : npl)
             val ++;
-        //for (i = 0; i < npl.size (); ++i)
-          //  npl[i] += 1;
     }
     else ind_bias = 0;
 
-    
+
     /* --- creation of layers */
     nNumLayers = nl;
     pLayers    = new Layer[nl];
-    
+
     /* --- init des couches */
     for ( i = 0; i < nNumLayers; i++ )
     {
         /* --- creation of neurons */
         pLayers[i].nNumNeurons = npl[i];
         pLayers[i].pNeurons    = new Neuron[ npl[i] ];
-        
+
         /* --- init of neurons */
         for( j = 0; j < npl[i]; j++ )
         {
                 pLayers[i].pNeurons[j].x  = 1.0;
-                
+
                 pLayers[i].pNeurons[j].e  = 0.0;
 
             if (i > 0 && j >= ind_bias)
@@ -105,7 +103,7 @@ dAvgTestError(0.0)
                 pLayers[i].pNeurons[j].wsave = NULL;
             }
         }
-        
+
     }
 }
 
@@ -154,15 +152,15 @@ void MultiLayerPerceptron::RandomWeights()
 void MultiLayerPerceptron::SetInputSignal(CVDouble & input)
 {
     int i;
-    
+
     for ( i = ind_bias; i < pLayers[0].nNumNeurons; i++)
     {
         pLayers[0].pNeurons[i].x = input[i-ind_bias];
     }
     if (ind_bias == 1)
         pLayers[0].pNeurons[0].x = 1;
-    
-    
+
+
 }
 
 /**************************************************/
@@ -170,9 +168,9 @@ void MultiLayerPerceptron::GetOutputSignal(CVDouble & output)
 {
     int i;
     output.clear ();
-    
+
     output.resize (pLayers[nNumLayers-1].nNumNeurons - ind_bias);
-    
+
     for ( i = ind_bias; i < pLayers[nNumLayers-1].nNumNeurons; i++ )
         output[i-ind_bias] = pLayers[nNumLayers-1].pNeurons[i].x;
 }
@@ -202,7 +200,7 @@ void MultiLayerPerceptron::RestoreWeights()
 void MultiLayerPerceptron::PropagateSignal()
 {
     int i,j,k;
-    
+
     /* --- la boucle commence avec la seconde couche */
     for (i = 1; i < nNumLayers; i++)
     {
@@ -232,15 +230,15 @@ void MultiLayerPerceptron::ComputeOutputError(CVDouble & target)
     {
         double x = pLayers[nNumLayers-1].pNeurons[i].x;
         double d = (target[i- ind_bias] - x);
-        
+
         pLayers[nNumLayers-1].pNeurons[i].e = dGain * x * (1.0 - x) * d;
-        
+
         dMSE += (d * d);
         dMAE += fabs(d);
     }
     /* --- erreur quadratique moyenne */
     dMSE /= (double)(pLayers[nNumLayers-1].nNumNeurons - ind_bias);
-    
+
     /* --- erreur absolue moyenne */
     dMAE /= (double)(pLayers[nNumLayers-1].nNumNeurons - ind_bias);
 }
@@ -295,26 +293,26 @@ void MultiLayerPerceptron::AdjustWeights()
 /**************************************************/
 void MultiLayerPerceptron::Simulate(CVDouble & input, CVDouble & output, CVDouble & target, bool training)
 {
-    
+
     if(0 == input.size())  return;
     if(0 == target.size()) return;
-    
-    
+
+
     /* --- on fait passer le signal dans le reseau */
-    
+
     SetInputSignal(input);
-    
+
     PropagateSignal();
-    
+
     //AdjustWeights();
-    
+
     GetOutputSignal(output);
-    
-    
+
+
     /* --- calcul de l'erreur en sortie par rapport a la cible */
     /*     ce calcul sert de base pour la rÈtropropagation     */
     // ComputeOutputError(target);
-    
+
     /* --- si c'est un apprentissage, on fait une retropropagation de l'erreur */
     if (training)
     {
@@ -324,14 +322,14 @@ void MultiLayerPerceptron::Simulate(CVDouble & input, CVDouble & output, CVDoubl
         //GetOutputSignal(output);
     }
     //std::cout << "dMSE: "<< pLayers[nNumLayers-1].pNeurons[0].x << std::endl;
-    
+
 }
 
 /**************************************************/
 void MultiLayerPerceptron::Predict (CVDouble & input, Struct::CVDouble & output)
 {
     if(0 == input.size())  return;
-    
+
     SetInputSignal(input);
     PropagateSignal();
     GetOutputSignal(output);
@@ -342,34 +340,34 @@ void MultiLayerPerceptron::Predict (CVDouble & input, Struct::CVDouble & output)
 int MultiLayerPerceptron::Train(const CVDouble & target_, const CMatDouble & trainingMatrix)
 {
     int count = 0;
-    
+
     unsigned int Numb = trainingMatrix[0].size ();
     unsigned int ncol = trainingMatrix.size ();
-    
+
     CVDouble  input (pLayers[0].nNumNeurons);
     CVDouble  output (pLayers[nNumLayers-1].nNumNeurons);
     CVDouble  target (pLayers[nNumLayers-1].nNumNeurons);
-    
+
     if(0 == input.size()) return 0;
     if(0 == output.size()) return 0;
     if(0 == target.size()) return 0;
-    
+
     for (unsigned int i = 0 ; i < Numb ; ++i)
     {
         /* --- on le transforme en input/target */
         target[0] = target_[i];
         for (unsigned int j = 0 ; j < ncol ; ++j)
             input[j] = trainingMatrix[j][i];
-        
+
         /* --- on fait un apprentisage du reseau avec cette ligne*/
         Simulate(input, output, target, true);
         count++;
     }
-    
+
     input.clear();
     output.clear();
     target.clear();
-    
+
     return count;
 }
 
@@ -380,34 +378,34 @@ int MultiLayerPerceptron::Test(const CMatDouble & Matrix, CVDouble & Output)
     unsigned int Numb = Matrix[0].size ();
     unsigned int ncol = Matrix.size ();
     Output.resize (Numb);
-    
+
     CVDouble  input (pLayers[0].nNumNeurons);
     CVDouble  output (pLayers[nNumLayers-1].nNumNeurons);
-    
+
     if(0 == Matrix.size() or 0 == Matrix[0].size()) return 0;
     if(0 == input.size()) return 0;
     if(0 == output.size()) return 0;
-    
+
     dAvgTestError = 0.0;
-    
+
     CMatDouble trainingMatrix = Matrix;
-    
+
     for (unsigned int i = 0 ; i < Numb ; ++i)
     {
         for (unsigned int j = 0 ; j < ncol ; ++j)
             input[j] = trainingMatrix[j][i];
-        
+
         /* --- on fait un apprentisage du reseau  avec cette ligne*/
         Predict(input,output);
         Output[i] = output[0];
         count++;
     }
-    
+
     dAvgTestError /= count;
-    
+
     input.clear();
     output.clear();
-    
+
     return count;
 }
 
@@ -424,32 +422,32 @@ void MultiLayerPerceptron::Run(const CVDouble & target_, const CMatDouble & Matr
     bool   Stop = false;
     bool   firstIter = true;
     double dMinTestError = 0.0;
-    
+
     CMatDouble trainingMatrix = Matrix;
     CVDouble cible = target_;
-    
+
     Output.clear ();
-    
+
     /* --- init du generateur de nombres aleatoires  */
     /* --- et generation des pondÈrations aleatoires */
     InitializeRandoms();
     RandomWeights();
-    
+
     /* --- on lance l'apprentissage avec tests */
     do {
-        
+
         countLines += Train(target_, trainingMatrix);
         //Test(trainingMatrix);
         countTrain++;
-        
+
         if(firstIter)
         {
             dMinTestError = dAvgTestError;
             firstIter = false;
         }
-        
+
         // printf( "%i \t TestError: %f", countTrain, dAvgTestError);
-        
+
         if ( dAvgTestError < dMinTestError)
         {
             //printf(" -> saving weights\n");
@@ -462,15 +460,15 @@ void MultiLayerPerceptron::Run(const CVDouble & target_, const CMatDouble & Matr
             //Stop = true;
             //RestoreWeights();
         }
-        
+
     } while ( (!Stop) && (countTrain<maxiter) );
-    
+
     //Test(trainingMatrix, Output);
-    
+
     CVDouble input;// (trainingMatrix.size () - 1);
-    
+
     CVDouble Res;
-    
+
     for (unsigned i = 0 ; i < trainingMatrix[0].size (); ++i){
         for (unsigned j = 0 ; j < trainingMatrix.size (); ++j)
             input.push_back (trainingMatrix [j][i]);

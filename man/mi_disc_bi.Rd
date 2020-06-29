@@ -4,7 +4,7 @@
 \alias{mi_disc_bi}
 \title{Discrete bivariate Mutual Information}
 \usage{
-mi_disc_bi(X, Y, log = "log2")
+mi_disc_bi(X, Y, log = "log2", normalize = FALSE)
 }
 \arguments{
 \item{X}{Integer vector.}
@@ -12,6 +12,8 @@ mi_disc_bi(X, Y, log = "log2")
 \item{Y}{Integer vector.}
 
 \item{log}{String argument in the set ("log2", "loge","log10"), which indicates the log function to use. The log2 is used by default.}
+
+\item{normalize}{Logical argument (FALSE by default)  for the option of normalizing the mutual information by dividing it by the joint entropy.}
 }
 \description{
 Discrete bivariate Mutual Information

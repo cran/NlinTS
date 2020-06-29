@@ -16,6 +16,7 @@ typedef std::vector<std::vector<int>> MatInt;
 typedef std::vector<std::vector<double>> MatDouble;
 
 namespace nsEntropy{
+
 VectInt count (const std::vector<int> & X);
 MatInt count (const MatInt & X);
 
@@ -37,25 +38,30 @@ double joinEntropy (const MatInt & Mat, std::string base = "log");
 
 
 double condEntropy (const VectInt & X, const VectInt & Y, std::string log = "log");
-double condEntropy (const VectInt & X, const MatInt & Y, std::string base = "log");
+double condEntropy (const VectInt & X, const MatInt & Y, std::string log = "log");
 
-double mutualInformation (const MatInt & X, std::string log = "log");
-double mutualInformation (const std::vector<int> & X, const std::vector<int> & Y, std::string log = "log");
+double mutualInformation (const MatInt & X, std::string log = "log",  bool normalize = false);
+double mutualInformation (const std::vector<int> & X, const std::vector<int> & Y, std::string log = "log", bool normalize = false);
 
-double transferEntropy (const VectInt & X, const VectInt & Y, int p, int q, std::string base = "log", bool normalize = false);
-
+double transferEntropy (const VectInt & X, const VectInt & Y, int p, int q, std::string log = "log", bool normalize = false);
 
 
 /*--------------- contnious variables ----------------*/
 double dist (double x, double y);
 double dist (VectDouble X, VectDouble Y);
 
-double entropy (const VectDouble & V, int k);
-double joinEntropy (const MatDouble & M, int k);
+double entropy (const VectDouble & V, int k, std::string log = "loge");
+double joinEntropy (const MatDouble & M, int k, std::string log = "loge");
 
-double mutualInformation (const MatDouble & M, int k, std::string alg = "ksg1");
+double mutualInformation (const MatDouble & M, int k, std::string alg, bool normalize);
 double transferEntropy (const VectDouble & X, const VectDouble & Y, int p=1, int q=1, int k=3, bool normalize = true);
 double transferEntropy_ksg (const VectDouble & X, const VectDouble & Y, int p=1, int q=1, int k=3);
+
+
+template <class type>
+void show (const std::vector<type> & Vect);
+template <class type>
+void showM (const std::vector<std::vector<type>> & Vect);
 
 /*********************************************************/
 // compute the number of neighbors of a given axis or set of axis
@@ -113,8 +119,8 @@ vector<double> kNearest (const vector<type> & V, int k)
 
 	for (unsigned i = 0; i < V. size (); i++)
 	{
-			std::sort (distMat[i].begin(), distMat[i].end());
-			result [i] = distMat[i][k];
+		std::sort (distMat[i].begin(), distMat[i].end());
+		result [i] = distMat[i][k];
 	}
 
 	return result;
@@ -177,7 +183,7 @@ void showM (const std::vector<std::vector<type>> & Vect){
 	for (auto & val:Vect)
 		show (val);
 	std::cout << std::endl;}
-}
+}// end namespace
 
 
 #endif

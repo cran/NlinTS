@@ -2,7 +2,7 @@
 % Please edit documentation in R/modues.R
 \name{varmlp}
 \alias{varmlp}
-\title{Artificial Neural Network VAR (Vector Auto-Regressive) model using a MultiLayer Perceptron.}
+\title{Artificial Neural Network VAR (Vector Auto-Regressive) model using a MultiLayer Perceptron, with the sigmoid activation function. The optimization algorithm is based on the stochastic gradient descent.}
 \usage{
 varmlp(df, lag, sizeOfHLayers, iters, bias = TRUE)
 }
@@ -18,15 +18,15 @@ varmlp(df, lag, sizeOfHLayers, iters, bias = TRUE)
 \item{bias}{Logical, true if the bias have to be used in the network.}
 }
 \value{
-train (df):  updates the model using the input dataframe.
+train (df):  updates the parameters of the model using the input dataframe.
 
-forecast (df):  returns the next row forecasts of an given dataframe.
+forecast (df):  makes forecasts of an given dataframe. The forecasts include the forecasted row based on each previous "lag" rows, where the last one is the next forecasted row of  df.
 }
 \description{
-Artificial Neural Network VAR (Vector Auto-Regressive) model using a MultiLayer Perceptron.
+Artificial Neural Network VAR (Vector Auto-Regressive) model using a MultiLayer Perceptron, with the sigmoid activation function. The optimization algorithm is based on the stochastic gradient descent.
 }
 \details{
-This function builds the model, and returns an object that can be used to make forecasts and can be updated using new data.
+This function builds the model, and returns an object that can be used to make forecasts and can be updated from new data.
 }
 \examples{
 library (timeSeries) # to extract time series

@@ -2,7 +2,6 @@ library (Rcpp)
 library (Rdpack)
 
 
-
 .Info <-  Module ('InfoEntropy', PACKAGE = "NlinTS")
 
 .neuralNet <-  Module ('VAR_MLP', PACKAGE = "NlinTS")
@@ -18,17 +17,16 @@ library (Rdpack)
 }
 
 
-
-#' Artificial Neural Network VAR (Vector Auto-Regressive) model using a MultiLayer Perceptron.
+#' Artificial Neural Network VAR (Vector Auto-Regressive) model using a MultiLayer Perceptron, with the sigmoid activation function. The optimization algorithm is based on the stochastic gradient descent.
 #'
-#' @details This function builds the model, and returns an object that can be used to make forecasts and can be updated using new data.
+#' @details This function builds the model, and returns an object that can be used to make forecasts and can be updated from new data.
 #' @param df A numerical dataframe
 #' @param sizeOfHLayers Integer vector that contains the size of hidden layers, where the length of this vector is the number of hidden layers, and the i-th element is the number of neurons in the i-th hidden layer.
 #' @param lag The lag parameter.
 #' @param iters The number of iterations.
 #' @param bias Logical, true if the bias have to be used in the network.
-#' @return train (df):  updates the model using the input dataframe.
-#' @return forecast (df):  returns the next row forecasts of an given dataframe.
+#' @return train (df):  updates the parameters of the model using the input dataframe.
+#' @return forecast (df):  makes forecasts of an given dataframe. The forecasts include the forecasted row based on each previous "lag" rows, where the last one is the next forecasted row of  df.
 #' @examples
 #' library (timeSeries) # to extract time series
 #' library (NlinTS)
@@ -50,7 +48,7 @@ varmlp <- function(df, lag, sizeOfHLayers, iters, bias = TRUE){
 
 #' The Granger causality test
 #'
-#' @details The test evaluates if the second time series causes the first one using the Granger test of causality.
+#' @details This is the classical Granger test of causality. The null hypothesis is that the second time series does not cause the first one
 #' @param ts1 Numerical dataframe containing one variable.
 #' @param ts2 Numerical dataframe containing one variable.
 #' @param lag The lag parameter.
@@ -79,7 +77,7 @@ causality.test <- function(ts1,ts2, lag, diff = FALSE){
 
 #' A non linear Granger causality test
 #'
-#' @details The test evaluates if the second time series causes the first one. Two MLP artificial neural networks are evaluated to perform the test, one using just the target time series (ts1), and the second using both time series.
+#' @details A non-linear test of causality using artificial neural networks. Two MLP artificial neural networks are evaluated to perform the test, one using just the target time series (ts1), and the second using both time series. The null hypothesis of this test is that the second time series does not cause the first one.
 #' @param ts1 Numerical series.
 #' @param ts2 Numerical series.
 #' @param lag The lag parameter
@@ -133,7 +131,7 @@ df.test <- function(ts, lag){
     return (v) ;
 }
 
-
+#*****************************************#
 #' Discrete Entropy
 #'
 #' @details Computes the Shanon entropy of an integer vector.
@@ -157,32 +155,35 @@ entropy_disc <- function (V, log = "log2")
 #' @param X Integer vector.
 #' @param Y Integer vector.
 #' @param log String argument in the set ("log2", "loge","log10"), which indicates the log function to use. The log2 is used by default.
+#' @param normalize Logical argument (FALSE by default)  for the option of normalizing the mutual information by dividing it by the joint entropy.
 #' @examples
 #' library (NlinTS)
 #' mi = mi_disc_bi (c(3,2,4,4,3), c(1,4,4,3,3))
 #' print (mi)
-mi_disc_bi <- function (X, Y, log = "log2")
+mi_disc_bi <- function (X, Y, log = "log2", normalize = FALSE)
 {
     #Info =  Module ('InfoEntropy', PACKAGE = "NlinTS")
-    v = .Info $ mutualInformation_disc_u (X, Y, log);
+    v = .Info $ mutualInformation_disc_u (X, Y, log, normalize);
     return (v);
 }
 
+#*****************************************#
 #' Discrete multivariate Mutual Information
 #'
 #' @details Computes the Mutual Information between columns of a dataframe.
 #' @param df  Datafame of type Integer.
 #' @param log String argument in the set ("log2", "loge","log10"), which indicates the log function to use. The log2 is used by default.
+#' @param normalize Logical argument (FALSE by default)  for the option of normalizing the mutual information by dividing it by the joint entropy.
 #' @examples
 #' library (NlinTS)
 #' df = data.frame (c(3,2,4,4,3), c(1,4,4,3,3))
 #' mi = mi_disc (df)
 #' print (mi)
-mi_disc <- function (df, log = "log2")
+mi_disc <- function (df, log = "log2", normalize = FALSE)
 {
     #Info =  Module ('InfoEntropy', PACKAGE = "NlinTS")
     M = t(df)
-    v = .Info $ mutualInformation_disc (M, log);
+    v = .Info $ mutualInformation_disc (M, log, normalize);
     return (v);
 }
 
@@ -217,6 +218,7 @@ te_disc <- function (X, Y, p = 1, q = 1, log = "log2", normalize = FALSE)
 #' @details Computes the continuous entropy of a numerical vector using the Kozachenko approximation.
 #' @param V  Interger vector.
 #' @param k  Integer argument, the number of neighbors.
+#' @param log String argument in the set ("log2", "loge","log10"), which indicates the log function to use. The loge is used by default.
 #' @references{
 #'   \insertRef{kraskov2004estimating}{NlinTS}
 #' }
@@ -227,10 +229,10 @@ te_disc <- function (X, Y, p = 1, q = 1, log = "log2", normalize = FALSE)
 #' #load data
 #' data = LPP2005REC
 #' print (entropy_cont (data[,1], 3))
- entropy_cont <- function (V, k = 3)
+ entropy_cont <- function (V, k = 3, log = "loge")
  {
     #Info =  Module ('InfoEntropy', PACKAGE = "NlinTS")
-     v = .Info $ entropy_cont (V, k);
+     v = .Info $ entropy_cont (V, k, log);
      return (v)
  }
 
@@ -241,7 +243,8 @@ te_disc <- function (X, Y, p = 1, q = 1, log = "log2", normalize = FALSE)
 #' @param X Integer vector, first time series.
 #' @param Y Integer vector, the second time series.
 #' @param k  Integer argument, the number of neighbors.
-#' @param algo String argument specifies the algorithm use ("ksg1", "ksg2"), as tow propositions of Kraskov estimation are provided. The first one ("ksg1") is used by default
+#' @param algo String argument specifies the algorithm use ("ksg1", "ksg2"), as tow propositions of Kraskov estimation are provided. The first one ("ksg1") is used by default.
+#' @param normalize Logical argument (FALSE by default)  for the option of normalizing the mutual information by dividing it by the joint entropy.
 #' @references{
 #'   \insertRef{kraskov2004estimating}{NlinTS}
 #' }
@@ -254,11 +257,11 @@ te_disc <- function (X, Y, p = 1, q = 1, log = "log2", normalize = FALSE)
 #' print (mi_cont (data[,1], data[,2], 3, 'ksg1'))
 #' print (mi_cont (data[,1], data[,2], 3, 'ksg2'))
 
- mi_cont <- function (X, Y, k = 3, algo = 'ksg1')
+ mi_cont <- function (X, Y, k = 3, algo = 'ksg1', normalize = FALSE)
  {
     df = data.frame (X, Y)
     M = t(df)
-    v = .Info $ mutualInformation_cont (M, k, algo);
+    v = .Info $ mutualInformation_cont (M, k, algo, normalize);
     return (v);
  }
 
