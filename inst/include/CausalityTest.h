@@ -1,5 +1,5 @@
 /**
-  @file    CausalityTest.h
+  @file    causalityTest.h
   Purpose: class for the Granger causality test.
   @authors Hmamouche Youssef
   @date    05/07/2017
@@ -8,10 +8,10 @@
 #ifndef CAUSALITYTEST_H
 #define CAUSALITYTEST_H
 
-#include "Struct.h"
-#include "Exception.h"
+#include "struct.h"
+#include "exception.h"
 
-class CausalityTest {
+class causalityTest {
 private:
     
     Struct::CVDouble ts1;
@@ -32,12 +32,12 @@ public:
     @param lag_ the lag parameter.
     @param d a boolean value for the possibility of making data stationarr in case of true.
     */
-    CausalityTest (Rcpp::NumericVector ts1_,
+    causalityTest (Rcpp::NumericVector ts1_,
                    Rcpp::NumericVector ts2_,
                    int lag_,
                    bool d = false); // throw (Exception);
 
-    ~CausalityTest (){};
+    ~causalityTest (){};
     
     /* The bivariate VAR model */
     friend Struct::CVDouble VECbivar (Struct::CMatDouble, unsigned, bool d);

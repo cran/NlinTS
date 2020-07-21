@@ -12,7 +12,7 @@
 
 #include <Rcpp.h>
 
-#include "Struct.h"
+#include "struct.h"
 
 class DickeyFuller
 {

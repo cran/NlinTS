@@ -5,7 +5,7 @@
 #include "cmath"
 #include <tgmath.h>
 
-#include "../inst/include/FDIST.h"
+#include "../inst/include/fdist.h"
 
 #define PI 3.14159265358
 

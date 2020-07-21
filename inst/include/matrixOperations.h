@@ -3,11 +3,11 @@
  * @date    09/06/2016
  **/
 
-#ifndef CMATRIXOPERATIONS_H
-#define CMATRIXOPERATIONS_H
+#ifndef MATRIXOPERATIONS_H
+#define MATRIXOPERATIONS_H
 
-#include "Struct.h"
-#include "Exception.h"
+#include "struct.h"
+#include "exception.h"
 
 using namespace Struct;
 

@@ -2,7 +2,7 @@
  * @authors Hmamouche Youssef
  **/
 
-#include "../inst/include/Operateurs.h"
+#include "../inst/include/operateurs.h"
 
 using namespace std;
 using namespace Struct;

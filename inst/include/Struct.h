@@ -17,7 +17,7 @@
 #include <iomanip>
 #include <algorithm>
 
-#include "Exception.h"
+#include "exception.h"
 
 
 namespace Struct
@@ -58,6 +58,7 @@ public:
     CMatDouble (unsigned Size /* = 0 */) : vector<CVDouble>(Size) {}
     CMatDouble () : vector<CVDouble>() {}
     void Init_Mat( const vector< vector<double> > & M);
+    vector< vector<double> > to_Mat ();
     void Standardise  ();
     CMatDouble Normalise  ();
     void Denormalising (const CMatDouble & minMax);

@@ -1,6 +1,6 @@
 /**
  *
- * @file    CausalityTest.cpp
+ * @file    causalityTest.cpp
  *
  * @authors Hmamouche Youssef
  *
@@ -13,12 +13,12 @@
  **/
 
 #include <Rcpp.h>
-#include "../inst/include/Tests.h"
+#include "../inst/include/tests.h"
 #include "../inst/include/Ftable.h"
-#include "../inst/include/FDIST.h"
-#include "../inst/include/Cmatrixoperations.h"
-#include "../inst/include/Operateurs.h"
-#include "../inst/include/CausalityTest.h"
+#include "../inst/include/fdist.h"
+#include "../inst/include/matrixOperations.h"
+#include "../inst/include/operateurs.h"
+#include "../inst/include/causalityTest.h"
 
 
 using namespace MatrixOperations;
@@ -26,7 +26,7 @@ using namespace Struct;
 using namespace std;
 
 
-CausalityTest::CausalityTest (Rcpp::NumericVector  ts1_,
+causalityTest::causalityTest (Rcpp::NumericVector  ts1_,
                               Rcpp::NumericVector  ts2_, int lag_, bool d /* = false */) //throw (Exception) 
 {
     
@@ -85,7 +85,7 @@ CausalityTest::CausalityTest (Rcpp::NumericVector  ts1_,
 }
 
 // The Summary function
-void CausalityTest::summary ()
+void causalityTest::summary ()
 {
     Rcpp::Rcout <<  "------------------------------------------------\n";
     Rcpp::Rcout <<  "        Test of causality" << "\n";
@@ -98,16 +98,16 @@ void CausalityTest::summary ()
 }
 
 // Get the p-value of the test
-double CausalityTest::get_p_value () {
+double causalityTest::get_p_value () {
     return p_value;
 }
 
-double CausalityTest::get_gci () {
+double causalityTest::get_gci () {
     return GCI;
 }
 
 // Get the  statistic of the test
-double CausalityTest::get_F_test () {
+double causalityTest::get_F_test () {
     return Ftest;
 }
 

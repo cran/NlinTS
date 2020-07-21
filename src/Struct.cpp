@@ -2,7 +2,7 @@
  * @authors Hmamouche Youssef
  **/
 
-#include "../inst/include/Struct.h"
+#include "../inst/include/struct.h"
 using namespace std;
 
 namespace Struct
@@ -133,18 +133,30 @@ void CMatDouble::Init_Mat( const vector< vector <double> > & M)
   {
       unsigned int i,j;
       this->clear ();
-      unsigned int Nblign = M.size ();
-      unsigned int NbColumn = M[0].size () - 1;
+      unsigned long Nblign = M.size ();
+      unsigned long NbColumn = M[0].size ();
 
       this->resize (NbColumn);
       for( j = 0 ; j < NbColumn ; ++j)
         {
           (*this) [j] = CVDouble (Nblign);
           for( i = 0 ; i < Nblign  ; ++i)
-              (*this) [j][i] = M[i][j+1];
-        }
-  }
-
+              (*this) [j][i] = M[i][j];
+      }
+}
+/****************************************************/
+vector<vector<double> > CMatDouble::to_Mat()
+{
+    unsigned long m = (*this).size(), n = (*this)[0].size ();
+    vector<vector<double>>  T (n);
+    for (unsigned long i = 0 ; i < n ; ++i)
+    {
+        T[i]. resize (m);
+         for (unsigned long j = 0 ; j < m ; ++j)
+             T[i][j] = (*this)[j][i];
+    }
+    return T;
+}
 /***********************************************************************************/
 
 // Check if a vector contains a nan value

@@ -6,9 +6,9 @@
  *
  */
 
-#include "../inst/include/Entropy.h"
+#include "../inst/include/entropyExport.h"
 #include "../inst/include/nsEntropy.h"
-#include "../inst/include/Exception.h"
+#include "../inst/include/exception.h"
 
 using namespace Rcpp;
 

@@ -6,10 +6,10 @@
 #include <cmath>
 #include <Rcpp.h>
 
-#include "../inst/include/FDIST.h"
-#include "../inst/include/Operateurs.h"
-#include"../inst/include/Cmatrixoperations.h"
-#include "../inst/include/Tests.h"
+#include "../inst/include/fdist.h"
+#include "../inst/include/operateurs.h"
+#include"../inst/include/matrixOperations.h"
+#include "../inst/include/tests.h"
 
 using namespace Struct;
 using namespace MatrixOperations;

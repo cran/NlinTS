@@ -2,9 +2,9 @@
  * @authors Hmamouche Youssef
  **/
 
-#include "../inst/include/Cmatrixoperations.h"
-#include "../inst/include/Operateurs.h"
-#include "../inst/include/Tests.h"
+#include "../inst/include/matrixOperations.h"
+#include "../inst/include/operateurs.h"
+#include "../inst/include/tests.h"
 
 using namespace std;
 using namespace Struct;

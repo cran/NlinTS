@@ -1,6 +1,6 @@
-#include <iostream>
+//#include <iostream>
 #include <cstdlib>
-#include <cmath>
+#include <math.h>
 #include <algorithm>
 #include "../inst/include/nsEntropy.h"
 
@@ -9,7 +9,8 @@ using namespace std;
 /*****************************************************/
 // Extract distinct values
 
-namespace nsEntropy {
+//using namespace nsEntropy;
+//namespace nsEntropy {
 
 double myLOG (double x, std::string log)
 {
@@ -54,9 +55,9 @@ double digamma (double x)
 
 /*****************************************************/
 	// Min and max values of columns of a matrix
-VectDouble minMax (const VectDouble & vect)
+VectD nsEntropy::minMax (const VectD & vect)
 {
-	VectDouble result (2);
+	VectD result (2);
 	result [0] = vect [0];
 	result [1] = vect [0];
 
@@ -71,20 +72,20 @@ VectDouble minMax (const VectDouble & vect)
 	return result;
 }
 /*****************************************************/
-MatDouble minMax (const MatDouble & mat)
+MatD nsEntropy::minMax (const MatD & mat)
 {
-	MatDouble result (mat[0]. size ());
+	MatD result (mat[0]. size ());
 	for (unsigned j = 0; j < mat[0]. size (); ++j)
 	{
-		result [j] = minMax (getCol (mat, j));
+		result [j] = minMax (getColumn (mat, j));
 	}
 	return result;
 }
 
 /*****************************************************/
-void normalize (MatDouble & mat)
+void nsEntropy::normalize (MatD & mat)
 {
-	MatDouble min_max = minMax (mat);
+	MatD min_max = minMax (mat);
 	unsigned m = mat[0]. size (), n = mat. size ();
 
 		for (unsigned j = 0; j < m; ++j)
@@ -99,7 +100,7 @@ void normalize (MatDouble & mat)
 }
 
 /*****************************************************/
-vector<int> count (const std::vector<int> & X)
+vector<int> nsEntropy::count (const std::vector<int> & X)
 {
 	std::vector<int> Vect (X);
 	std::vector<int>::iterator it;
@@ -112,7 +113,7 @@ vector<int> count (const std::vector<int> & X)
 }
 
 /*****************************************************/
-MatInt count (const MatInt & X)
+MatInt nsEntropy::count (const MatInt & X)
 {
 	vector<vector<int>> Vect (X);
 	vector<vector<int>>::iterator it;
@@ -125,7 +126,7 @@ MatInt count (const MatInt & X)
 }
 
 /*****************************************************/
-double joinProba (vector<int> X, vector<int> Y, int x, int y)
+double nsEntropy::joinProba (vector<int> X, vector<int> Y, int x, int y)
 {
 	double J = 0;
 	for (unsigned i = 0; i < X.size (); ++i)
@@ -137,7 +138,7 @@ double joinProba (vector<int> X, vector<int> Y, int x, int y)
 }
 
 /*****************************************************/
-double joinProba (MatInt Y, VectInt y)
+double nsEntropy::joinProba (MatInt Y, VectInt y)
 {
 	double J = 0;
 	unsigned j;
@@ -154,7 +155,7 @@ double joinProba (MatInt Y, VectInt y)
 }
 
 /*****************************************************/
-double Proba (vector<int> X, int x)
+double nsEntropy::Proba (vector<int> X, int x)
 {
 	double P = 0;
 	for (unsigned i = 0; i < X.size (); ++i)
@@ -167,7 +168,7 @@ double Proba (vector<int> X, int x)
 
 
 /*****************************************************/
-double entropy (const VectInt & X, string log)
+double nsEntropy::entropy (const VectInt & X, string log)
 {
 	double E = 0, x;
 
@@ -184,7 +185,7 @@ double entropy (const VectInt & X, string log)
 }
 
 /****************************/
-double joinEntropy (const VectInt & X1, const VectInt & X2, string log)
+double nsEntropy::joinEntropy (const VectInt & X1, const VectInt & X2, string log)
 {
 	double J = 0;
 	double x;
@@ -207,7 +208,7 @@ double joinEntropy (const VectInt & X1, const VectInt & X2, string log)
 }
 
 /*****************************************************/
-double joinEntropy (const MatInt & Mat, string log)
+double nsEntropy::joinEntropy (const MatInt & Mat, string log)
 {
 	double J = 0;
 	double x;
@@ -224,13 +225,13 @@ double joinEntropy (const MatInt & Mat, string log)
 }
 
 /*****************************************************/
-double condEntropy (const VectInt & X, const VectInt & Y, string log)
+double nsEntropy::condEntropy (const VectInt & X, const VectInt & Y, string log)
 {
 	return joinEntropy (X, Y, log) - entropy (Y, log);
 }
 
 /*****************************************************/
-double condEntropy (const VectInt & X, const MatInt & Y, string log)
+double nsEntropy::condEntropy (const VectInt & X, const MatInt & Y, string log)
 {
 	MatInt M = Y;
 	M .push_back (X);
@@ -239,7 +240,7 @@ double condEntropy (const VectInt & X, const MatInt & Y, string log)
 }
 
 /*****************************************************/
-double mutualInformation (const VectInt & X, const VectInt & Y, std::string log, bool normalize)
+double nsEntropy::mutualInformation (const VectInt & X, const VectInt & Y, std::string log, bool normalize)
 {
   double je = joinEntropy (X, Y, log);
   double eX = entropy (X, log), eY = entropy (Y, log);
@@ -252,14 +253,14 @@ double mutualInformation (const VectInt & X, const VectInt & Y, std::string log,
 }
 
 /*****************************************************/
-double mutualInformation (const MatInt & X, std::string log, bool normalize)
+double nsEntropy::mutualInformation (const MatInt & X, std::string log, bool normalize)
 {
   double mi = 0, max = 0;
 	VectInt vect;
 
 	for (unsigned i = 0; i < X [0]. size (); ++i)
 	{
-		vect = getCol (X, i);
+		vect = getColumn (X, i);
 		double e = entropy (vect, log);
 		mi += e;
 		if (e > max)
@@ -274,7 +275,7 @@ double mutualInformation (const MatInt & X, std::string log, bool normalize)
 	return  mi;
 }
 /*****************************************************/
-double transferEntropy (const VectInt & X, const VectInt & Y, int p, int q, std::string log, bool normalize)
+double nsEntropy::transferEntropy (const VectInt & X, const VectInt & Y, int p, int q, std::string log, bool normalize)
 {
 	double te, denom;
 	MatInt Xp, Xm, Ym, XmYm, XpYm;
@@ -316,11 +317,11 @@ double transferEntropy (const VectInt & X, const VectInt & Y, int p, int q, std:
 /*********************************************************/
 
 /*****************************************************/
-double dist (double x, double y) {
+double nsEntropy::dist (double x, double y) {
 	return abs (x - y);
 }
 
-double dist (VectDouble X, VectDouble Y)
+double nsEntropy::dist (VectD X, VectD Y)
 {
 	double distance = 0;
 
@@ -334,14 +335,14 @@ double dist (VectDouble X, VectDouble Y)
 
  /*********************************************************/
 
-double entropy (const VectDouble & V, int k, std::string log)
+double nsEntropy::entropy (const VectD & V, int k, std::string log)
 {
 	double E = 0;
 	unsigned N = V. size ();
 	double sum = 0;
 	double cd = 1;
 
-	VectDouble distances = kNearest (V, k);
+	VectD distances = kNearest (V, k);
 
 
 	for (unsigned i = 0; i < N; i ++){
@@ -356,7 +357,7 @@ double entropy (const VectDouble & V, int k, std::string log)
 }
 
  /*********************************************************/
-double joinEntropy (const MatDouble & M, int k, std::string log)
+double nsEntropy::joinEntropy (const MatD & M, int k, std::string log)
 {
 	double E = 0;
 	unsigned N = M. size ();
@@ -364,7 +365,7 @@ double joinEntropy (const MatDouble & M, int k, std::string log)
 
 	unsigned d = M[0]. size ();
 
-	VectDouble distances = kNearest (M, k);
+	VectD distances = kNearest (M, k);
 
 	for (unsigned i = 0; i < N; i ++)
 		sum += myLOG (2 * distances [i], log);
@@ -376,8 +377,8 @@ double joinEntropy (const MatDouble & M, int k, std::string log)
 }
 
 /*******************************************************/
-VectInt nbOfNeighborsInRectangle (const MatDouble & X, const MatDouble X1, const MatDouble X2,
-						           const VectDouble & distances)
+VectInt nsEntropy::nbOfNeighborsInRectangle (const MatD & X, const MatD X1, const MatD X2,
+						           const VectD & distances)
 {
 	unsigned N = X. size ();
 	VectInt Nx (N, 0);
@@ -416,7 +417,7 @@ VectInt nbOfNeighborsInRectangle (const MatDouble & X, const MatDouble X1, const
 /*****************************************************/
 /* M: array of dimension (x, 2), computing mi between the two columns
 */
-double mutualInformation (const MatDouble & M, int k, string alg, bool normalize)
+double nsEntropy::mutualInformation (const MatD & M, int k, string alg, bool normalize)
 {
 	double mi = 0;
 	unsigned N = M. size ();
@@ -425,11 +426,11 @@ double mutualInformation (const MatDouble & M, int k, string alg, bool normalize
 	//cout << "Size: " << N << " " << M[0]. size () << endl;
 
 	VectInt NX, NY;
-	VectDouble X, Y;
-	X = getCol (M, 0);
-	Y = getCol (M, 1);
+	VectD X, Y;
+	X = getColumn (M, 0);
+	Y = getColumn (M, 1);
 
-	VectDouble distances = kNearest (M, k);
+	VectD distances = kNearest (M, k);
 
 	if (alg == "ksg1")
 	{
@@ -448,8 +449,8 @@ double mutualInformation (const MatDouble & M, int k, string alg, bool normalize
 
 	else if (alg == "ksg2")
 	{
-		VectDouble distances_x = kNearest (X, k);
-		VectDouble distances_y = kNearest (Y, k);
+		VectD distances_x = kNearest (X, k);
+		VectD distances_y = kNearest (Y, k);
 		NX = computeNbOfNeighbors (X, distances_x, true);
 		NY = computeNbOfNeighbors (Y, distances_y, true);
 
@@ -475,12 +476,12 @@ double mutualInformation (const MatDouble & M, int k, string alg, bool normalize
 
 /***************************************************************/
 // Tranfer entropy from Y to X
-double transferEntropy (const VectDouble & X, const VectDouble & Y, int p, int q, int k, bool normalize)
+double nsEntropy::transferEntropy (const VectD & X, const VectD & Y, int p, int q, int k, bool normalize)
 {
 	double te, sum = 0;
 
 
-	MatDouble Xm, Xp, Ym, XpYm, XmYm;
+	MatD Xm, Xp, Ym, XpYm, XmYm;
 	VectInt NXm, NXmYm, NXpYm, NXp;
 
 	Xm = lagg (X, p, 0);
@@ -508,7 +509,7 @@ double transferEntropy (const VectDouble & X, const VectDouble & Y, int p, int q
 		}
 
 	//  distances from k neighbors of the join matrix Xp  (Xcurrent + Xpassed + Ypassed)
-	VectDouble distances = kNearest (XmYm, k);
+	VectD distances = kNearest (XmYm, k);
 
 	// we count the number of local points relative to  the marginal matrices
 	NXmYm = computeNbOfNeighbors (XmYm, distances);
@@ -527,10 +528,10 @@ double transferEntropy (const VectDouble & X, const VectDouble & Y, int p, int q
 		// Compute  NTE <- TE / (H0 - H(Xp|Xm,Ym))
 		double denom = 0, H0;
 
-		//VectDouble Xt = getCol (Xp, 0);
-		VectDouble min_max = minMax (X);
+		//VectD Xt = getColumn (Xp, 0);
+		VectD min_max = minMax (X);
 
-		H0 = myLOG (abs (abs(min_max[1]) - abs(min_max[0])) , "loge");
+		H0 = myLOG (abs (min_max[1] - min_max[0]) , "loge");
 
 
 
@@ -547,12 +548,12 @@ double transferEntropy (const VectDouble & X, const VectDouble & Y, int p, int q
 
 
 /**************************************************************************/
-double transferEntropy_ksg (const VectDouble & X, const VectDouble & Y, int p, int q, int k)
+double nsEntropy::transferEntropy_ksg (const VectD & X, const VectD & Y, int p, int q, int k)
 {
 	double te, sum = 0;
 
 	VectInt NXm, NXmYm, NXpYm;
-	MatDouble Xm, Ym, XpYm, XmYm, Xp;
+	MatD Xm, Ym, XpYm, XmYm, Xp;
 
 	Xm = lagg (X, p, 0);
 	Ym = lagg (Y, q);
@@ -579,7 +580,7 @@ double transferEntropy_ksg (const VectDouble & X, const VectDouble & Y, int p, i
 		}
 
 	//  distances from k neighbors of the join matrix Xp  (Xcurrent + Xpassed + Ypassed)
-	VectDouble distances = kNearest (XpYm, k);
+	VectD distances = kNearest (XpYm, k);
 
 	// We countthe number of points within the hyper-rectangle equal to the Cartesian prod of  XmYm, Xp and Xm
 	NXmYm = nbOfNeighborsInRectangle (XpYm, Xm, Ym, distances);
@@ -597,4 +598,4 @@ double transferEntropy_ksg (const VectDouble & X, const VectDouble & Y, int p, i
 	return te;
 }
 
-} // end namespace
+//} // end namespace

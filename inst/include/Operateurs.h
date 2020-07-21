@@ -10,11 +10,51 @@
 
 #include <Rcpp.h>
 
-#include "Struct.h"
-#include "Exception.h"
+#include<iostream>
+#include "struct.h"
+#include "exception.h"
 
+
+using namespace std;
 using namespace Struct;
 
+template<typename T>
+void show (const T & a)
+{
+    cout << a;
+}
+
+template<typename T>
+void show (const std::vector<T> & vect)
+{
+    cout << "[";
+    for (auto & val : vect)
+    {
+        show (val);
+        if (val == vect. back ())
+             cout << "]\n";
+        else
+            cout << " ";
+    }
+
+}
+
+
+/*****************************/
+template<typename T>
+void show (const std::vector<std::vector<T>> & matrix)
+{
+    cout << "[";
+    // Print the matrix
+    for (auto & row : matrix)
+    {
+           show (row);
+           if (row == matrix. back ())
+               cout << "] \n";
+           else
+                cout << "\n";
+    }
+}
 /**
     Compute a vector-vector multiplication.
 

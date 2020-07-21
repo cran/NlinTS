@@ -1,21 +1,17 @@
 library (Rcpp)
 library (Rdpack)
 
-
-.Info <-  Module ('InfoEntropy', PACKAGE = "NlinTS")
+.Info <-  Module ('moduleInfo', PACKAGE = "NlinTS")
 
 .neuralNet <-  Module ('VAR_MLP', PACKAGE = "NlinTS")
 
-.Caus.test <-  Module ('CausalityTest', PACKAGE = "NlinTS")
+.Caus.test <-  Module ('causalityTest', PACKAGE = "NlinTS")
 
-.dynCaus.test <-  Module ('NlinCausalityTest', PACKAGE = "NlinTS")
-
+.dynCaus.test <-  Module ('nlinCausalityTest', PACKAGE = "NlinTS")
 
 .df.test <-  Module ('DickeyFuller', PACKAGE = "NlinTS")
 
-.onLoad <- function(libname, pkgname) {
-}
-
+.onLoad <- function(libname, pkgname) {}
 
 #' Artificial Neural Network VAR (Vector Auto-Regressive) model using a MultiLayer Perceptron, with the sigmoid activation function. The optimization algorithm is based on the stochastic gradient descent.
 #'
@@ -25,6 +21,10 @@ library (Rdpack)
 #' @param lag The lag parameter.
 #' @param iters The number of iterations.
 #' @param bias Logical, true if the bias have to be used in the network.
+#' @param learningRate The learning rate to use, O.1 by default, and if Adam algorithm is used, then it is the initial learning rate.
+#' @param algo String argument, for the optimisation algorithm to use, in choice ["sgd", "adam"]. By default "sgd" (stochastic gradient descent) is used. The algorithm 'adam' is to adapt the learning rate while using "sgd".
+#' @param activations String vector for the activations functions to use (in choice ["sigmoid", "relu", "tanh"]). The length of this vector is the number of hidden layers plus one (the output layer). By default, the relu activation function is used in hidden layers, and the sigmoid in the last layer.
+
 #' @return train (df):  updates the parameters of the model using the input dataframe.
 #' @return forecast (df):  makes forecasts of an given dataframe. The forecasts include the forecasted row based on each previous "lag" rows, where the last one is the next forecasted row of  df.
 #' @examples
@@ -34,17 +34,17 @@ library (Rdpack)
 #' data = LPP2005REC
 #' # Predict the last row of the data
 #' train_data = data[1:(nrow (data) - 1), ]
-#' model = varmlp (train_data, 1, c(10,5), 200, TRUE)
+#' model = varmlp (train_data, 1, c(10), 20, bias = TRUE, learningRate=0.1, algo = "sgd");
 #' predictions = model$forecast (train_data)
 #' print (predictions[nrow (predictions),])
 
-varmlp <- function(df, lag, sizeOfHLayers, iters, bias = TRUE){
-    #neuralNet =  Module ('VAR_MLP', PACKAGE = "NlinTS")
-    varp = .neuralNet$VAR_MLP
-    v = new (varp, df, lag, sizeOfHLayers, iters, bias)
+varmlp <- function(df, lag, sizeOfHLayers, iters, bias = TRUE, learningRate=0.1, algo = "sgd", activations=vector()){
+    #neuralNet =  Module ('varmlp', PACKAGE = "NlinTS")
+    varp = .neuralNet$VARNN_Export
+    v = new (varp, lag, sizeOfHLayers, activations, learningRate, algo, bias)
+    v$fit (df,iters)
     return (v)
 }
-
 
 #' The Granger causality test
 #'
@@ -70,7 +70,7 @@ varmlp <- function(df, lag, sizeOfHLayers, iters, bias = TRUE){
 
 causality.test <- function(ts1,ts2, lag, diff = FALSE){
     #Caus.test =  Module ('CausalityTest', PACKAGE = "NlinTS")
-    test0 = .Caus.test $ CausalityTest ;
+    test0 = .Caus.test $ causalityTest ;
     v = new (test0, ts1,ts2, lag, diff) ;
     return (v) ;
 }
@@ -84,7 +84,12 @@ causality.test <- function(ts1,ts2, lag, diff = FALSE){
 #' @param LayersUniv Integer vector that contains the size of hidden layers of the univariate model. The length of this vector is the number of hidden layers, and the i-th element is the number of neurons in the i-th hidden layer.
 #' @param LayersBiv Integer vector that contains the size of hidden layers of the bivariate model. The length of this vector is the number of hidden layers, and the i-th element is the number of neurons in the i-th hidden layer.
 #' @param iters The number of iterations.
+#' @param learningRate The learning rate to use, O.1 by default, and if Adam algorithm is used, then it is the initial learning rate.
+#' @param algo String argument, for the optimisation algorithm to use, in choice ["sgd", "adam"]. By default "sgd" (stochastic gradient descent) is used. The algorithm 'adam' is to adapt the learning rate while using "sgd".
 #' @param bias Logical argument  for the option of using the bias in the networks.
+#' @param activationsUniv String vector for the activations functions to use (in choice ["sigmoid", "relu", "tanh"]) for the univariate model. The length of this vector is the number of hidden layers plus one (the output layer). By default, the relu activation function is used in hidden layers, and the sigmoid in the last layer.
+#' @param activationsBiv String vector for the activations functions to use (in choice ["sigmoid", "relu", "tanh"]) for the bivariate model. The length of this vector is the number of hidden layers plus one (the output layer). By default, the relu activation function is used in hidden layers, and the sigmoid in the last layer.
+
 #' @return gci: the Granger causality index.
 #' @return Ftest:  the statistic of the test.
 #' @return pvalue: the p-value of the test.
@@ -93,15 +98,15 @@ causality.test <- function(ts1,ts2, lag, diff = FALSE){
 #' library (timeSeries) # to extract time series
 #' library (NlinTS)
 #' data = LPP2005REC
-#' # We construct the model based
-#' model = nlin_causality.test(data[,1], data[,2], 2, c(2,2), c(4,4), 500)
+#' model = nlin_causality.test (data[,1], data[,2], 2, c(2), c(4),iters=20)
 #' model$summary ()
 
-nlin_causality.test <- function (ts1,ts2,lag,LayersUniv,LayersBiv,iters,bias=TRUE)
+nlin_causality.test <- function (ts1,ts2,lag,LayersUniv,LayersBiv, iters=100, learningRate = 0.1, algo = "sgd", bias=TRUE, activationsUniv = vector(), activationsBiv = vector())
 {
-    #dynCaus.test =  Module ('NlinCausalityTest', PACKAGE = "NlinTS")
-    test0 = .dynCaus.test $ DynamicCausalityTest ;
-    v = new (test0, ts1,ts2, lag, LayersUniv, LayersBiv, iters, bias) ;
+    model = .dynCaus.test $ nlinCausalityTest ;
+    v = new (model, lag) ;
+    v$buildModels (LayersUniv, LayersBiv, activationsUniv, activationsBiv, learningRate, algo, bias) ;
+    v$fit (ts1, ts2, iters) ;
     return (v) ;
 }
 
@@ -190,7 +195,7 @@ mi_disc <- function (df, log = "log2", normalize = FALSE)
 #*****************************************#
 #' Discrete  Transfer Entropy
 #'
-#' @details Computes the Transfer Entropy from the second time series to the one.
+#' @details Computes the Transfer Entropy from the second time series to the first one.
 #' @param X Integer vector, first time series.
 #' @param Y Integer vector, the second time series.
 #' @param p Integer, the lag parameter to use for the first vector (p = 1 by default).
@@ -267,7 +272,7 @@ te_disc <- function (X, Y, p = 1, q = 1, log = "log2", normalize = FALSE)
 
 #' Continuous  Transfer Entropy
 #'
-#' @details Computes the continuous Transfer Entropy from the second time series to the one using the Kraskov estimation
+#' @details Computes the continuous Transfer Entropy from the second time series to the first one using the Kraskov estimation
 #' @param X Integer vector, first time series.
 #' @param Y Integer vector, the second time series.
 #' @param p Integer, the lag parameter to use for the first vector, (p = 1 by default).
