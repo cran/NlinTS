@@ -38,7 +38,7 @@ library (Rdpack)
 #' predictions = model$forecast (train_data)
 #' print (predictions[nrow (predictions),])
 
-varmlp <- function(df, lag, sizeOfHLayers, iters, bias = TRUE, learningRate=0.1, algo = "sgd", activations=vector()){
+varmlp <- function(df, lag, sizeOfHLayers, iters=100, bias = TRUE, learningRate=0.1, algo = "sgd", activations=vector()){
     #neuralNet =  Module ('varmlp', PACKAGE = "NlinTS")
     varp = .neuralNet$VARNN_Export
     v = new (varp, lag, sizeOfHLayers, activations, learningRate, algo, bias)

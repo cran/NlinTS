@@ -17,20 +17,23 @@
 
 /******** add a layer to the network **************/
 Network::Network(vector<unsigned long> _input_dim):
-    input_dim (_input_dim),
+    nb_layers (0)
+{
+  input_dim = _input_dim;
+}
+
+Network::Network():
     nb_layers (0)
 {}
 
-Network::Network(){}
-
 void Network::set_input_size(vector<unsigned long> _input_dim)
 {
-    input_dim = vector<unsigned long> (_input_dim);
+    input_dim = _input_dim;
 }
 
 Network::~Network()
 {
-    for (auto layer : this->layers)
+    for (auto & layer : this->layers)
         delete layer;
 }
 
@@ -39,23 +42,24 @@ void Network::addLayer(Layer * layer)
     vector<unsigned long> in_dim;
 
     if (this->layers. size () == 0)
-        in_dim = vector<unsigned long> (input_dim);
-        // copy_vector (in_dim, this->input_dim);
+    {
+      in_dim = input_dim;
+    }
+
     else
-        in_dim = vector<unsigned long> ( this->layers.back ()->get_output_dim ());
-        //copy_vector (in_dim, this->layers.back ()->get_output_dim ());
+        in_dim = this->layers.back ()->get_output_dim ();
 
     // add the layer
     this->layers.push_back (layer);
 
     // set input dimension
-    this->layers.back ()-> set_input_dim (in_dim);
+    this->layers.back ()->set_input_dim (in_dim);
 
     // consider this layer as output layer
     this->layers. back ()->set_output_layer(true);
 
     // consider the previous layer as hidden layer
-    if (this->layers. size () > 1)
+    if (this->layers.size () > 1)
         this->layers [this->layers. size () - 2]-> set_output_layer (false);
 
      nb_layers ++;
@@ -89,8 +93,8 @@ void Network::backpropagation(const VectD & output)
         else
         {
             propagatedErrors = this->layers[i]-> get_output();
-            for (unsigned j = 0; j < propagatedErrors. size (); ++j)
-                propagatedErrors[j][0] -= output[j];
+            for (unsigned j = 0; j < propagatedErrors[0]. size (); ++j)
+                propagatedErrors[0][j] -= output[j];
         }
 
         // packpropagate the errors through the layer
@@ -100,7 +104,7 @@ void Network::backpropagation(const VectD & output)
 }
 
 /*******************************************************/
-void Network::updateWeight (unsigned long numb_iter)
+void Network::updateWeight (unsigned numb_iter)
 {
     for (unsigned i = 0; i < this->layers. size (); ++i)
     {
@@ -140,7 +144,7 @@ double Network::average_loss(const MatD & preds, const MatD & real)
 }
 
 /************** Train the network : one epoch *********************/
-void Network::train(const MatD & X, const MatD & y)
+void Network::train(const MatD & X, const MatD & y, unsigned numb_iter)
 {
     MatD predictions;
     unsigned long i = 0;
@@ -148,13 +152,13 @@ void Network::train(const MatD & X, const MatD & y)
     {
         predictions. push_back (this->simulate ({row}, true)[0]);
         backpropagation (y[i]);
-        updateWeight (i);
+        updateWeight (numb_iter);
         ++i;
     }
     //Rcpp::Rcout << "average mse: " << average_loss (predictions, y) << endl;
 }
 /************** Train the network from a vector of matrix *********************/
-/*void Network::train(const vector<MatD> &X, const MatD &y)
+/*void Network::train(const vector<MatD> &X, const MatD &y, , unsigned numb_iter)
 {
     MatD predictions;
     unsigned long i = 0;
@@ -162,17 +166,17 @@ void Network::train(const MatD & X, const MatD & y)
     {
         predictions. push_back (this->simulate (row, true)[0]);
         backpropagation (y[i]);
-        updateWeight (i);
+        updateWeight (numb_iter);
         ++i;
     }
     //Rcpp::Rcout << "average mse: " << average_loss (predictions, y) << endl;
 }*/
 
 /************** Train the network : multiple epochs *********************/
-void Network::fit (const MatD & X, const MatD & y, int n_iters, bool shuffle /*= true*/)
+void Network::fit (const MatD & X, const MatD & y, unsigned n_iters, bool shuffle /*= true*/)
 {
 
-    for (int i = 0; i < n_iters; ++i)
+    for (unsigned i = 0; i < n_iters; ++i)
     {
         MatD X_shuffled (X);
         MatD y_shuffled (y);
@@ -180,11 +184,11 @@ void Network::fit (const MatD & X, const MatD & y, int n_iters, bool shuffle /*=
         if (shuffle)
         {
             shuffle_X_y (X_shuffled, y_shuffled);
-            this->train (X_shuffled, y_shuffled);
+            this->train (X_shuffled, y_shuffled, i);
         }
         else
         {
-            this->train (X, y);
+            this->train (X, y, i);
         }
     }
 }
@@ -193,7 +197,7 @@ void Network::fit (const MatD & X, const MatD & y, int n_iters, bool shuffle /*=
 {
     for (int i = 0; i < n_iters; ++i)
     {
-       this->train (X, y);
+       this->train (X, y, i);
     }
 }*/
 

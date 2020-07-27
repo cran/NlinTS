@@ -36,8 +36,8 @@ private:
     unsigned long n_neurons;
     string activation;
     double learning_rate_init; // initial learning rate
-    unsigned long input_dim;
-    bool bias;
+    unsigned input_dim;
+    unsigned bias;
     bool output_layer;
     string algo;
 
@@ -55,8 +55,8 @@ private:
     MatD alpha;
 
     // Parameters for the Adam algorithm
-    double beta1; // decay rates for M
-    double beta2; // decay rates for V
+    double beta_1; // decay rates for M
+    double beta_2; // decay rates for V
     MatD M; //gradient
     MatD V; //squared gradient
 
@@ -83,7 +83,7 @@ public:
 
 
     void computeErrors(const MatD & nextErrors);
-    void updateWeights (unsigned long numb_iter);
+    void updateWeights (unsigned numb_iter);
     MatD get_output (){return {O};}
     MatD get_errors ();
 

@@ -24,16 +24,18 @@ VARNN::VARNN(const vector<unsigned long> &sizeOfLayers, unsigned p, bool bias, d
     activations (activations)
 {
     numLayers = unsigned (sizeOfLayers.size ()) + 1;
-    mlp = shared_ptr <Network> (new Network ());
+    //this->mlp = shared_ptr <Network> (new Network ());
+    mlp = Network ();
+    //this->mlp = new Network ();
 }
 
 void VARNN::fit(const CMatDouble &M, unsigned iterations)
 {
-    CMatDouble A, Real, Predictions;
+    CMatDouble A, Real;
     CVDouble result, res_out;
     CMatDouble minMax;
 
-    MatD X, Y;
+    MatD X, Y, Predictions;
 
     // Input matrix
     inputMat = M;
@@ -54,46 +56,51 @@ void VARNN::fit(const CMatDouble &M, unsigned iterations)
             activations. push_back("relu");
 
         // sigmoid for output layer
-         activations. push_back("relu");
+         activations. push_back("sigmoid");
     }
 
     // Construct the matrix of lagged variables (VAR (p) representation)
     for (auto & vec:inputMat)
         P_Part (vec, Real, A, lag);
 
-
     X = A.to_Mat();
     Y = Real.to_Mat();
 
     // Define the network structure
     vector<unsigned long> input_dim;
-    input_dim. push_back (A[0].size ());
+    input_dim. push_back (X[0].size ());
 
-    mlp->set_input_size (input_dim);
+    // input dimension of the network
+    this->mlp.set_input_size (input_dim);
 
     // hidden layers
     for (unsigned i = 0; i < sizeOfLayers. size (); ++i)
     {
-        mlp->addLayer (new Dense (sizeOfLayers[i], activations[i], learning_rate_init, bias, algo));
+        Dense * hidenLayer = new Dense (sizeOfLayers[i], activations[i], learning_rate_init, bias, algo);
+        mlp.addLayer (hidenLayer);
     }
 
     // output layer
-    mlp->addLayer (new Dense (Real.size (), activations. back (), learning_rate_init, bias, algo));
+    Dense * outputLayer = new Dense (Real.size (), activations. back (), learning_rate_init, bias, algo);
+    mlp.addLayer (outputLayer);
+
+    //Summary
+    //mlp.summary ();
 
     // train the network
-    mlp->fit (A.to_Mat(), Real.to_Mat(), iterations, true);
+    mlp.fit (X, Y, iterations, true);
 
     // compute the prediction and transforming them inti CMAtDouble class type
-    Predictions. Init_Mat (mlp->predict (A.to_Mat()));
+    Predictions = mlp.predict (X);
 
     // Evaluate the model on training data
     SSR.clear ();
-    SSR.resize (Real.size (), 0);
+    SSR.resize (Y[0].size (), 0);
 
-    for (unsigned long i = 0 ; i < Real.size () ; ++i)
+    for (unsigned long i = 0 ; i < Y[0].size () ; ++i)
     {
-        for (unsigned m = 0 ; m < Real[i].size() ; m++)
-            SSR [i] += pow (Predictions[i][m] - Real[i][m], 2);
+        for (unsigned j = 0 ; j < Y.size() ; j++)
+            SSR [i] += pow (Predictions[j][i] - Y[j][i], 2);
     }
 }
 
@@ -114,7 +121,7 @@ CMatDouble VARNN::forecast(const CMatDouble &M)
             Pr_Part (vec, A, lag);
 
         Predictions.clear ();
-        Predictions.Init_Mat (mlp->predict (A.to_Mat()));
+        Predictions.Init_Mat (mlp.predict (A.to_Mat()));
     }
     else
     {
@@ -143,7 +150,7 @@ void VARNN::train(const CMatDouble &M)
             P_Part (vec, present, B, lag);
 
         // Train the model
-        mlp->train (B.to_Mat(), present.to_Mat());
+        mlp.train (B.to_Mat(), present.to_Mat(), 0);
     }
     else
     {

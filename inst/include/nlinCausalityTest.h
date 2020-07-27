@@ -46,7 +46,7 @@ class nlinCausalityTest {
       @param hiddenLayersOfUnivModel vector of hidden layers sizes for the bivariate model.
       @param iterations the number of iterations.
       @param learningRateInit learning rate for sgf algoritm, or initial  rate if Adam algorithm is used.
-      @param d a boolean value for the possibility of making data stationarity in case of true.
+      @param bias a boolean value for the possibility of using the bias in the network.
       */
 
       nlinCausalityTest  (unsigned lag_ = 1);

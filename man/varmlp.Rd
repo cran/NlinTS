@@ -8,7 +8,7 @@ varmlp(
   df,
   lag,
   sizeOfHLayers,
-  iters,
+  iters = 100,
   bias = TRUE,
   learningRate = 0.1,
   algo = "sgd",

@@ -38,7 +38,7 @@ public:
     VARNN_Export(){};
    ~VARNN_Export(){};
     Rcpp::DataFrame forecast (Rcpp::DataFrame DF);
-    void fit (Rcpp::DataFrame, unsigned);
+    void fit (Rcpp::DataFrame, int);
     void train (Rcpp::DataFrame DF);
     Rcpp::NumericVector getSSR ();
 };

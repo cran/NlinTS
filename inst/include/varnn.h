@@ -38,14 +38,15 @@ class VARNN
 
       std::vector<unsigned long> sizeOfLayers;
       std::vector<string> activations;
-      std::shared_ptr <Network> mlp;
+      //std::shared_ptr <Network> mlp;
+      Network mlp;
       std::vector<double> SSR;
       Struct::CMatDouble inputMat ;    // input data
 
   public:
       VARNN (const vector<unsigned long> & sizeOfLayers, unsigned p, bool bias, double learning_rate_init = 0.1, const  std::vector<string> & activations = {}, const string & algo = "sgd");
       VARNN(){}
-      ~VARNN(){}
+     ~VARNN(){}
 
       /*********************************************************/
       void fit (const CMatDouble & M, unsigned iterations);

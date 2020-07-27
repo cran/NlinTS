@@ -27,29 +27,29 @@ using namespace std;
 
 
 causalityTest::causalityTest (Rcpp::NumericVector  ts1_,
-                              Rcpp::NumericVector  ts2_, int lag_, bool d /* = false */) //throw (Exception) 
+                              Rcpp::NumericVector  ts2_, int lag_, bool d /* = false */) //throw (Exception)
 {
-    
+
     // Checking if the lag value is positif
     if (lag_ <= 0)
         throw Exception ("The lag parameter is incorrect!");
 
     lag  = lag_;
-    
+
     for (const auto val:ts1_)
         ts1.push_back (val);
-    
+
     for (const auto val:ts2_)
         ts2.push_back (val);
-    
+
     if (ts1.size() != ts2.size())
        throw Exception ("The time series have not the same length!");
- 
-    
+
+
     // variables
     unsigned nl (ts1.size ());
     double RSS1(0), RSS0(0);
-    
+
     CVDouble VECT;
     CMatDouble M (1);
     M[0] = ts1;
@@ -57,12 +57,12 @@ causalityTest::causalityTest (Rcpp::NumericVector  ts1_,
     /* the VAR model of the system (v1) */
     VECT = VECbivar(M, lag, d);
     RSS0 = VECT[0];
-    
+
     /* the VAR model of the system (v1,v2) */
     M.push_back(ts2);
     VECT = VECbivar(M, lag, d);
     RSS1 = VECT[0];
-    
+
     int T = nl - lag;
 
     // The Granger causality Index
@@ -70,10 +70,10 @@ causalityTest::causalityTest (Rcpp::NumericVector  ts1_,
 
     // compute the F test
     Ftest = ((RSS0 - RSS1) / lag) / (RSS1 / (T - 2*lag - 1));
-    
+
     // compute the p-value of the test
     p_value = getPvalue (Ftest , lag , T - 2*lag - 1);
-    
+
     if (lag <= 20 and T - 2*lag - 1 <= 100)
         criticTest = ftable[T - 2*lag - 2][lag];
     else if (lag > 20 and T - 2*lag - 1 <= 100)
@@ -88,7 +88,7 @@ causalityTest::causalityTest (Rcpp::NumericVector  ts1_,
 void causalityTest::summary ()
 {
     Rcpp::Rcout <<  "------------------------------------------------\n";
-    Rcpp::Rcout <<  "        Test of causality" << "\n";
+    Rcpp::Rcout <<  "        the Granger causality test" << "\n";
     Rcpp::Rcout <<  "------------------------------------------------\n";
     Rcpp::Rcout <<  "The lag parameter: p = "<< lag << "\n";
     Rcpp::Rcout <<  "The Granger causality Index: GCI = "<< GCI << "\n";
@@ -110,5 +110,3 @@ double causalityTest::get_gci () {
 double causalityTest::get_F_test () {
     return Ftest;
 }
-
-

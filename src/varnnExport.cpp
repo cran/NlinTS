@@ -31,7 +31,7 @@ VARNN_Export::VARNN_Export (
   }
 
 
-void VARNN_Export::fit (Rcpp::DataFrame Df, unsigned iters)
+void VARNN_Export::fit (Rcpp::DataFrame Df, int iters)
 {
 
     vector<vector<double> > Mat = Rcpp::as < vector<vector<double> > > (Df);
@@ -48,7 +48,7 @@ void VARNN_Export::fit (Rcpp::DataFrame Df, unsigned iters)
         i++;
     }
 
-    Obj.fit (M, iters);
+    Obj.fit (M, unsigned (iters));
 }
 
 

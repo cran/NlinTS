@@ -2,6 +2,7 @@
 #include <vector>
 #include <math.h>
 #include "../inst/include/dense.h"
+#include "../inst/include/operateurs.h"
 
 using namespace std;
 
@@ -10,24 +11,24 @@ Dense::Dense(unsigned long _n_neurons, string _activation /*=sigmoid*/, double l
     :n_neurons (_n_neurons),
     activation (_activation),
     learning_rate_init (learning_rate_init_),
-    bias (bias_),
     output_layer (false),
     algo (alg),
-    beta1 (0.9),
-    beta2 (0.99)
+    beta_1 (0.9),
+    beta_2 (0.999)
 {
+
+    /* convert bias (bool) to unsigned */
+    bias = bias_?1:0;
+
     /* Allocate memory for the vectors of the layer */
-    this->net. resize (_n_neurons, 0);
-    this->E. resize (_n_neurons, 0);
-    this->O. resize (_n_neurons, 0);
-
-    this->alpha. resize (_n_neurons);
-    this->M. resize (_n_neurons);
-    this->V. resize (_n_neurons);
-
-    this->W. resize (_n_neurons);
-    this->DeltaW. resize (_n_neurons);
-
+    this->net. reserve (n_neurons);
+    this->E. reserve (n_neurons);
+    this->O. reserve (n_neurons);
+    this->alpha. resize (n_neurons);
+    this->M. resize(n_neurons);
+    this->V. resize (n_neurons);
+    this->W. resize (n_neurons);
+    this->DeltaW. resize (n_neurons);
 }
 
 /***********************************/
@@ -39,20 +40,24 @@ void Dense::set_input_dim (vector<unsigned long> in_dim)
         Rcpp::stop ("\n.");
     }
     this->input_dim = in_dim[0];
+    this->input.reserve (in_dim[0] + bias);
     // set uniform weights for each neuron
 
-    // init alpha parameters (including adam parameters)
-    for (unsigned long i = 0; i < n_neurons; ++i)
+    // init  parameters (including adam parameters)
+    for (unsigned long i = 0; i < this->n_neurons; ++i)
     {
-        alpha[i]. resize (input_dim + unsigned (this->bias), learning_rate_init);
-        M[i]. resize (input_dim + unsigned (this->bias), 0);
-        V[i]. resize (input_dim + unsigned (this->bias), 0);
-        DeltaW[i]. resize (input_dim + unsigned (this->bias), 0);
-        W[i] =  random_vector (input_dim + unsigned (this->bias));
+        //this->alpha[i]. resize (input_dim + unsigned (this->bias), this->learning_rate_init);
+        for (unsigned j = 0; j < this->input_dim + this->bias; ++j){
+          this->alpha[i]. push_back (this->learning_rate_init);}
+
+        this->DeltaW[i]. resize (this->input_dim + this->bias, 0.0);
+        this->W[i] =  random_vector (this->input_dim + this->bias);
+        this->M[i]. resize (this->input_dim + this->bias, 0.0);
+        this->V[i]. resize (this->input_dim + this->bias, 0.0);
     }
 }
 
-bool Dense::contains_bias() {return bias;}
+bool Dense::contains_bias() {return bool( bias);}
 
 bool Dense::is_output(){return output_layer;}
 
@@ -71,26 +76,39 @@ MatD Dense::simulate (const MatD & input_, bool store)
         Rcpp::stop ("\n.");
     }
 
-    vector<double> output;
-    vector<double> input__ ( input_[0]);
+    if (input_[0]. size () != this->input_dim)
+    {
+        Rcpp::Rcout << "      The input of the dense layer is not correct.. \n";
+        Rcpp::Rcout << "      The input dim must be: " << this->input_dim << ".\n";
+        Rcpp::Rcout << "      The input line is of size: " <<input_. size () << ".\n";
+        Rcpp::stop ("\n.");
+    }
+
+    VectD output;
+    VectD input__;
+    input__ = input_[0];
 
     if (this->bias)
         input__.insert (input__. begin (), 1);
 
     // output without activation function
-    //MultCVDouble (this->W, input, output);
     output = matrix_dot (this->W, input__);
 
-    if (store)
+    if (store == true)
     {
-        net = VectD (output);
-        input = VectD (input__);
+        net.clear ();
+        this->input. clear ();
+        net = output;
+        this->input = input__;
     }
     // output with activation function
     output = vect_activation (output, activation);
 
-    if (store)
-        this->O = VectD (output);
+    if (store == true)
+    {
+        this->O.clear ();
+        this->O = output;
+    }
 
     return {output};
 }
@@ -114,7 +132,6 @@ void Dense::computeErrors(const MatD & nextErrors)
     }
 
     this->E. clear ();
-    this->E. resize (this->n_neurons);
 
     VectD diff_net =  diff_activation (net, activation);
 
@@ -122,43 +139,62 @@ void Dense::computeErrors(const MatD & nextErrors)
 }
 
 /***********************************/
-void Dense::updateWeights (unsigned long numb_iter)
+void Dense::updateWeights (unsigned numb_iter)
 {
-    //vector<double> prevOutput (previousOutput);
-
-    //copy_vector (prevOutput, previousOutput);
-
-    //if (this->bias)
-        //prevOutput. insert (prevOutput. begin (), 1);
-
-    double momentum;
+    double momentum (0);
+    double m_hat (0), v_hat (0), delta_alpha (0);
     if (algo == "sgd")
          momentum = 0.9;
     else
          momentum = 0.0;
 
+    unsigned n_input = this->input_dim + this->bias;
+
     for (unsigned j = 0; j < this->n_neurons; ++j)
-        for (unsigned i = 0; i < this->W[0]. size (); ++i)
+    {
+        for (unsigned i = 0; i < n_input; ++i)
         {
-            this->DeltaW[j][i] =  momentum * this->DeltaW[j][i] + (1 - momentum) * input[i] * this->E[j];
+            //break;
+            this->DeltaW[j][i] =  momentum * this->DeltaW[j][i] + (1 - momentum) * this->input[i] * this->E[j];
+
+            // when using the momentum, some time DeltaW[j][i] decrease a lot, so we fix 0.000001 as a min
+            /*if (this->DeltaW[j][i] < 0.000001)
+                this->DeltaW[j][i] = 0.0;*/
+
             this->W[j][i] -= alpha[j][i]  * this->DeltaW[j][i];
         }
+      }
 
     // update learning rate
     if (algo == "adam")
     {
         for (unsigned j = 0; j < this->n_neurons; ++j)
-             for (unsigned i = 0; i < alpha[0]. size (); ++i)
+        {
+             for (unsigned i = 0; i < n_input; ++i)
                 {
-                    M[j][i] = ((beta1 * M[j][i]) + ((1 - beta1) * DeltaW[j][i])) ;
-                    V[j][i] = ((beta2 * V[j][i]) + ((1 - beta2) * DeltaW[j][i] * DeltaW[j][i])) ;
+                    //cout <<numb_iter << "   " <<  this->M[j][i] << "   " <<  this->W[j][i] << endl;
+                    this->M[j][i] = (this->beta_1 * this->M[j][i]) + ((1 - this->beta_1) * this->DeltaW[j][i]) ;
+                    this->V[j][i] = (this->beta_2 * this->V[j][i]) + ((1 - this->beta_2) * this->DeltaW[j][i] * this->DeltaW[j][i]) ;
 
-                    M[j][i] /= (1 - pow (beta1, numb_iter + 1));
-                    V[j][i] /= (1 - pow (beta2, numb_iter + 1));
+                    m_hat = this->M[j][i]   / (1.0 - double (pow (this->beta_1, numb_iter + 1)));
+                    v_hat = this->V[j][i]  / (1.0 - double (pow (this->beta_2, numb_iter + 1)));
 
-                    alpha[j][i] = alpha[j][i] - (M[j][i] * 0.001 / (sqrt (V[j][i]) + 0.00000001));
+                    // when using the momentum, some time DeltaW[j][i] decrease a lot, wo we fix 0.00001 as a minimum to 0
+                    /*if (this->M[j][i] < 0.00001){
+                        this->M[j][i] = 0.0;}
+
+                    if (this->V[j][i] < 0.00001){
+                        this->V[j][i] = 0.0;}*/
+
+                    delta_alpha = (0.001 * m_hat) / (sqrt (v_hat) + 0.00000001);
+
+                    // the adapted learning rate shouldn't be less that 0.001
+                    if (  delta_alpha < (this->alpha[j][i] - 0.001) )
+                        this->alpha[j][i] = this->alpha[j][i] - delta_alpha;
                 }
+          }
     }
+    //exit (1);
 }
 
 /*********************************/

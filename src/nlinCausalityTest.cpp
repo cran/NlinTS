@@ -69,11 +69,12 @@ void nlinCausalityTest::fit (Rcpp::NumericVector  ts1_, Rcpp::NumericVector  ts2
     double RSS1(0), RSS0(0);
 
     CMatDouble M;
-    M.reserve (2);
+    //M.reserve (2);
     M.push_back (ts1);
 
     // Fit the model on univariate ts
     univariateModel.fit (M, iterations);
+
     // add second variable
     M.push_back(ts2);
     // Fit Model2
@@ -151,7 +152,7 @@ void nlinCausalityTest::fit (Rcpp::NumericVector  ts1_, Rcpp::NumericVector  ts2
 void nlinCausalityTest::summary ()
 {
     Rcpp::Rcout <<  "---------------------------------------------------------\n";
-    Rcpp::Rcout <<  "         Results of the non-linear Granger causality test" << "\n";
+    Rcpp::Rcout <<  "         The non-linear Granger causality test" << "\n";
     Rcpp::Rcout <<  "---------------------------------------------------------\n";
     Rcpp::Rcout <<  "The lag parameter: p = "<< lag << "\n";
     Rcpp::Rcout <<  "The Granger causality Index: GCI = "<< GCI << "\n";

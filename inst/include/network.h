@@ -40,13 +40,13 @@ class Network
 	  void addLayer (Layer * layer);
 	  MatD simulate (const MatD & input, bool store);
 	  void backpropagation (const vector <double> & output);
-	  void updateWeight (unsigned long numb_iter);
+	  void updateWeight (unsigned numb_iter);
 	  double loss (const VectD & preds, const VectD & real);
 	  double average_loss (const MatD &preds, const MatD &real);
-	  void train (const MatD & X, const MatD & y);
+	  void train (const MatD & X, const MatD & y, unsigned numb_iter);
 	  //void train (const vector<MatD> &X, const MatD &y);
 
-	  void fit (const MatD & X, const MatD & y, int n_iters, bool shuffle = true);
+	  void fit (const MatD & X, const MatD & y, unsigned n_iters, bool shuffle = true);
 	  //void fit (const vector<MatD> & X, const MatD & y, int n_iters, bool shuffle = true);
 
 	  MatD predict (const MatD & X);

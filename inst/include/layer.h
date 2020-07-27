@@ -41,7 +41,7 @@ class Layer
     //virtual vector<double> simulate (const vector<double> & input, bool store)=0;
     virtual vector<vector<double>> simulate (const vector<vector<double>> & input, bool store)=0;
     virtual void computeErrors(const vector<vector<double>>  & nextErrors)=0;
-    virtual void updateWeights (unsigned long numb_iter)=0;
+    virtual void updateWeights (unsigned numb_iter)=0;
 
     //virtual  void get_errors (vector<double> & A)=0;
     virtual  vector<vector<double>> get_errors ()=0;
