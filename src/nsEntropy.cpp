@@ -4,6 +4,7 @@
 #include <algorithm>
 #include "../inst/include/nsEntropy.h"
 
+
 using namespace std;
 
 /*****************************************************/
@@ -99,6 +100,36 @@ void nsEntropy::normalize (MatD & mat)
 		}
 }
 
+//make combinations from left to n of size k
+void nsEntropy::generateKCombinations(vector<vector<unsigned>> & combins, vector<unsigned>& tmp, unsigned n, unsigned left, unsigned k)
+{
+    // record the combination
+    if (k == 0) {
+        combins.push_back(tmp);
+        return;
+    }
+
+    for (unsigned i = left; i <= n; ++i)
+    {
+        tmp.push_back(i);
+        generateKCombinations(combins, tmp, n, i + 1, k - 1);
+        tmp.pop_back();
+    }
+}
+
+// make combinations from left to n all sizes from 1 to  n - left + 1
+vector<vector<unsigned> > nsEntropy::generateAllCombinations(unsigned n, unsigned left)
+{
+    vector<vector<unsigned>> combins;
+    for (unsigned k (1); k <= n - left + 1; ++k)
+    {
+         vector<unsigned> tmp;
+         generateKCombinations (combins, tmp, n, left, k);
+    }
+
+    return combins;
+}
+
 /*****************************************************/
 vector<int> nsEntropy::count (const std::vector<int> & X)
 {
@@ -146,10 +177,11 @@ double nsEntropy::joinProba (MatInt Y, VectInt y)
 	for (unsigned i = 0; i < Y.size (); ++i)
 	{
 		for (j = 0; j < Y [0] .size (); ++j)
-			if (Y[i][j] != y[j]) break;
+			if (Y[i][j] != y[j])
+        break;
 
 		if (j == Y [0].size ())
-			J++;
+			J = J + 1.0;
 	}
 	return (J / Y.size ());
 }
@@ -201,7 +233,7 @@ double nsEntropy::joinEntropy (const VectInt & X1, const VectInt & X2, string lo
 			x = joinProba (X1, X2, X[i], Y[j]);
 
 			if (x > 0)
-				J += x  * myLOG (x, log);
+				J = J + x  * myLOG (x, log);
 		}
 	}
 	return -J;
@@ -256,23 +288,30 @@ double nsEntropy::mutualInformation (const VectInt & X, const VectInt & Y, std::
 double nsEntropy::mutualInformation (const MatInt & X, std::string log, bool normalize)
 {
   double mi = 0, max = 0;
-	VectInt vect;
+  unsigned n_cols = unsigned (X [0]. size ());
 
-	for (unsigned i = 0; i < X [0]. size (); ++i)
-	{
-		vect = getColumn (X, i);
-		double e = entropy (vect, log);
-		mi += e;
-		if (e > max)
-			max = e;
-	}
+  // compute the join entropy of all combinations of columns of X
+  vector<vector<unsigned>> combins = nsEntropy::generateAllCombinations (unsigned (n_cols - 1), 0);
 
-	mi -= joinEntropy (X, log);
+  for (auto & combin : combins)
+  {
+      if (combin. size () == 1)
+      {
+        double e =  entropy (getColumn (X, combin[0]), log);
+        if (e > max)
+          max = e;
+        mi -= e;
+      }
+      else
+      {
+        mi += joinEntropy (getCols (X, combin), log) *  pow (-1, combin. size ());
+      }
+  }
 
 	if (normalize && (max > 0))
 		mi /= max;
 
-	return  mi;
+	return  -mi;
 }
 /*****************************************************/
 double nsEntropy::transferEntropy (const VectInt & X, const VectInt & Y, int p, int q, std::string log, bool normalize)
@@ -415,15 +454,15 @@ VectInt nsEntropy::nbOfNeighborsInRectangle (const MatD & X, const MatD X1, cons
 }
 
 /*****************************************************/
-/* M: array of dimension (x, 2), computing mi between the two columns
-*/
+// M: array of dimension (x, 2), computing mi between the two columns
+
 double nsEntropy::mutualInformation (const MatD & M, int k, string alg, bool normalize)
 {
 	double mi = 0;
 	unsigned N = M. size ();
 	double sum = 0;
 
-	//cout << "Size: " << N << " " << M[0]. size () << endl;
+	//std::cout << "Size: " << N << " " << M[0]. size () << "\n";
 
 	VectInt NX, NY;
 	VectD X, Y;

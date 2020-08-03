@@ -172,20 +172,14 @@ void Dense::updateWeights (unsigned numb_iter)
         {
              for (unsigned i = 0; i < n_input; ++i)
                 {
-                    //cout <<numb_iter << "   " <<  this->M[j][i] << "   " <<  this->W[j][i] << endl;
                     this->M[j][i] = (this->beta_1 * this->M[j][i]) + ((1 - this->beta_1) * this->DeltaW[j][i]) ;
                     this->V[j][i] = (this->beta_2 * this->V[j][i]) + ((1 - this->beta_2) * this->DeltaW[j][i] * this->DeltaW[j][i]) ;
 
                     m_hat = this->M[j][i]   / (1.0 - double (pow (this->beta_1, numb_iter + 1)));
                     v_hat = this->V[j][i]  / (1.0 - double (pow (this->beta_2, numb_iter + 1)));
 
-                    // when using the momentum, some time DeltaW[j][i] decrease a lot, wo we fix 0.00001 as a minimum to 0
-                    /*if (this->M[j][i] < 0.00001){
-                        this->M[j][i] = 0.0;}
-
-                    if (this->V[j][i] < 0.00001){
-                        this->V[j][i] = 0.0;}*/
-
+                    // the adapted learning rate shouldn't be less that 0.00001 and sould not be greater that initial rate
+                    if ((this->alpha[j][i] - delta_alpha) > 0.00001 and (this->alpha[j][i] - delta_alpha) <= learning_rate_init)
                     delta_alpha = (0.001 * m_hat) / (sqrt (v_hat) + 0.00000001);
 
                     // the adapted learning rate shouldn't be less that 0.001
@@ -194,7 +188,6 @@ void Dense::updateWeights (unsigned numb_iter)
                 }
           }
     }
-    //exit (1);
 }
 
 /*********************************/

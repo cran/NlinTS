@@ -31,7 +31,12 @@ namespace nsEntropy{
 		double joinProba (MatInt Y, VectInt y);
 
 		double Proba (std::vector<int> X,  int x);
-		MatInt generateTuples (const MatInt & M);
+
+		// make combinations from left to n all sizes from 1 to  n - left + 1
+		void generateKCombinations(vector<vector<unsigned>> & combins, vector<unsigned>& tmp, unsigned n, unsigned left, unsigned k);
+
+		// make combinations from left to n all sizes from 1 to  n - left
+		vector<vector<unsigned>> generateAllCombinations(unsigned n, unsigned left);
 
 
 		double joinEntropy (const std::vector<int> & X, const std::vector<int> & Y, std::string log = "log");
@@ -60,9 +65,21 @@ namespace nsEntropy{
 
 
 		/*template <class type>
-		void show (const std::vector<type> & Vect);
-		template <class type>
-		void showM (const std::vector<std::vector<type>> & Vect);*/
+		void show (const std::vector<type> & Vect);*/
+		/*template <class type>
+		void show (const std::vector<std::vector<type>> & matrix)
+		{
+			unsigned i = 1;
+			for (auto & row : matrix)
+			{
+					cout << i++ << ". ";
+
+				 cout << "[ ";
+				 for (auto & val : row)
+						 cout << val << "  ";
+					cout << "]\n";
+			}
+		}*/
 
 		/*********************************************************/
 		// compute the number of neighbors of a given axis or set of axis
@@ -147,21 +164,21 @@ namespace nsEntropy{
 		}
 
 		/*********************************************************/
-		template<class type>
-		vector<vector<type>> getCols (const vector<vector<type>> & M, const vector<type> & cols)
+		template<typename type>
+		vector<vector<type>> getCols (const vector<vector<type>> & M, const vector<unsigned> & cols)
 		{
 			vector<vector<type>> SmallM (M. size ()) ;
 
 			for (unsigned i = 0; i < M. size (); ++i)
-				for (double idx : cols)
+				for (auto & idx : cols)
 						SmallM[i]. push_back (M[i][idx]);
 
 			return SmallM;
 		}
 
 		/*********************************************************/
-		template <class type>
-		vector<type> getColumn (const vector<vector<type>> & M, int col)
+		template <typename type>
+		vector<type> getColumn (const vector<vector<type>> & M, unsigned col)
 		{
 			vector<type> Vec (M. size ()) ;
 
