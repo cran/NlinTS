@@ -1,4 +1,4 @@
-//#include <iostream>
+//#include <Rcpp.h>
 #include <cstdlib>
 #include <math.h>
 #include <algorithm>
@@ -73,6 +73,24 @@ VectD nsEntropy::minMax (const VectD & vect)
 	return result;
 }
 /*****************************************************/
+	// Min and max values of columns of a matrix
+VectD nsEntropy::minMax (const vector<int> & vect)
+{
+	VectD result (2);
+	result [0] = vect [0];
+	result [1] = vect [0];
+
+	for (unsigned i = 1; i < vect. size (); ++i)
+	{
+		if (vect [i] < result [0])
+			result [0] = vect [i];
+
+		if (vect [i] > result [1])
+			result [1] = vect [i];
+	}
+	return result;
+}
+/*****************************************************/
 MatD nsEntropy::minMax (const MatD & mat)
 {
 	MatD result (mat[0]. size ());
@@ -100,6 +118,7 @@ void nsEntropy::normalize (MatD & mat)
 		}
 }
 
+/*****************************************************/
 //make combinations from left to n of size k
 void nsEntropy::generateKCombinations(vector<vector<unsigned>> & combins, vector<unsigned>& tmp, unsigned n, unsigned left, unsigned k)
 {
@@ -117,6 +136,7 @@ void nsEntropy::generateKCombinations(vector<vector<unsigned>> & combins, vector
     }
 }
 
+/*****************************************************/
 // make combinations from left to n all sizes from 1 to  n - left + 1
 vector<vector<unsigned> > nsEntropy::generateAllCombinations(unsigned n, unsigned left)
 {
@@ -345,8 +365,16 @@ double nsEntropy::transferEntropy (const VectInt & X, const VectInt & Y, int p, 
 	denom = joinEntropy (Xp, log) - joinEntropy (Xm, log);
 	te = denom - joinEntropy (XpYm, log) + joinEntropy (XmYm, log);
 
+	// normalisation: deviding TE by max entropy of X: log (max(X) - min (X))
 	if (normalize and denom != 0)
-			te = te / denom;
+	{
+      VectD min_max = minMax (X);
+      double H0 = myLOG (abs (min_max[1] - min_max[0]) , log);
+      
+      if (H0 != 0)
+      	te = te / H0;
+  	}
+	//te = te / denom; // this is another method but not precise
 
 	return te;
 }
@@ -500,7 +528,7 @@ double nsEntropy::mutualInformation (const MatD & M, int k, string alg, bool nor
 		mi = digamma (k) - (1.0 / k) + digamma (N) - sum;
 	}
 
-  // Normalazing mutual information by divide it by the joint entropy
+  // Normalizing mutual information by divide it by the joint entropy
   if (normalize)
   {
     double jointEn = 0;
@@ -561,10 +589,10 @@ double nsEntropy::transferEntropy (const VectD & X, const VectD & Y, int p, int 
 
 	te = digamma (k) + (sum / N) ;
 
-
+	
+	// Compute  NTE <- TE / (H0 - H(Xp|Xm,Ym))
 	if (normalize == true)
 	{
-		// Compute  NTE <- TE / (H0 - H(Xp|Xm,Ym))
 		double denom = 0, H0;
 
 		//VectD Xt = getColumn (Xp, 0);
@@ -573,13 +601,13 @@ double nsEntropy::transferEntropy (const VectD & X, const VectD & Y, int p, int 
 		H0 = myLOG (abs (min_max[1] - min_max[0]) , "loge");
 
 
-
 		for (unsigned i = 0; i < N; i ++)
 			denom +=  myLOG (2*distances[i], "loge") + digamma (NXmYm[i] + 1);
 
 		denom = H0 - ( (denom / N) - digamma (k) );
 
-		te = te / denom;
+		if (denom != 0)
+			te = te / denom;
 	}
 
 	return te;

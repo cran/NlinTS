@@ -22,6 +22,7 @@ namespace nsEntropy{
 		MatInt count (const MatInt & X);
 
 		VectD minMax (const VectD & vect);
+		VectD minMax (const std::vector<int> & vect);
 		MatD minMax (const MatD & mat);
 		void normalize (MatD & mat);
 
