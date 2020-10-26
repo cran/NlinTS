@@ -134,10 +134,7 @@ void nlinCausalityTest::fit (Rcpp::NumericVector  ts1_, Rcpp::NumericVector  ts2
         Ftest = ((RSS0 - RSS1) / RSS1) *  ( (double) d2 / (double) d1 );
 
         /* p-value of the F-test */
-        if (Ftest == 0)
-          p_value = 1;
-        else
-          p_value = getPvalue (Ftest , d1 , d2);
+         p_value = getPvalue (Ftest , d1 , d2);
 
         if (d1 <= 20 and d2 <= 100)
             criticTest = ftable[d2][d1];
@@ -151,9 +148,9 @@ void nlinCausalityTest::fit (Rcpp::NumericVector  ts1_, Rcpp::NumericVector  ts2
 }
 void nlinCausalityTest::summary ()
 {
-    Rcpp::Rcout <<  "---------------------------------------------------------\n";
-    Rcpp::Rcout <<  "         The non-linear Granger causality test" << "\n";
-    Rcpp::Rcout <<  "---------------------------------------------------------\n";
+    Rcpp::Rcout <<  "--------------------\n";
+    Rcpp::Rcout <<  "    Test summary"  << "\n";
+    Rcpp::Rcout <<  "--------------------\n";
     Rcpp::Rcout <<  "The lag parameter: p = "<< lag << "\n";
     Rcpp::Rcout <<  "The Granger causality Index: GCI = "<< GCI << "\n";
     Rcpp::Rcout <<  "The value of the F-test: "<< Ftest << "\n";

@@ -157,49 +157,28 @@ void Network::train(const MatD & X, const MatD & y, unsigned numb_iter)
     }
     //Rcpp::Rcout << "average mse: " << average_loss (predictions, y) << endl;
 }
-/************** Train the network from a vector of matrix *********************/
-/*void Network::train(const vector<MatD> &X, const MatD &y, , unsigned numb_iter)
-{
-    MatD predictions;
-    unsigned long i = 0;
-    for (const auto & row : X)
-    {
-        predictions. push_back (this->simulate (row, true)[0]);
-        backpropagation (y[i]);
-        updateWeight (numb_iter);
-        ++i;
-    }
-    //Rcpp::Rcout << "average mse: " << average_loss (predictions, y) << endl;
-}*/
+
 
 /************** Train the network : multiple epochs *********************/
 void Network::fit (const MatD & X, const MatD & y, unsigned n_iters, bool shuffle /*= true*/)
 {
+    MatD X_shuffled, y_shuffled;
+    if (shuffle)
+    {
+         X_shuffled = X;
+         y_shuffled = y;
+        shuffle_X_y (X_shuffled, y_shuffled, 5);
+    }
 
     for (unsigned i = 0; i < n_iters; ++i)
     {
-        MatD X_shuffled (X);
-        MatD y_shuffled (y);
-
         if (shuffle)
-        {
-            shuffle_X_y (X_shuffled, y_shuffled);
             this->train (X_shuffled, y_shuffled, i);
-        }
+
         else
-        {
             this->train (X, y, i);
-        }
     }
 }
-/************** Train the network : multiple epochs *********************/
-/*void Network::fit (const vector<MatD> & X, const MatD & y, int n_iters, bool shuffle)
-{
-    for (int i = 0; i < n_iters; ++i)
-    {
-       this->train (X, y, i);
-    }
-}*/
 
 
 /********** test the network *************/
@@ -211,21 +190,6 @@ MatD Network::predict (const MatD & X)
 
     return predictions;
 }
-/********** test the network *************/
-/*MatD Network::predict(const vector<MatD> &X)
-{
-    MatD predictions;
-    for (const auto & row : X)
-        predictions. push_back (this->simulate (row, false)[0]);
-
-    return predictions;
-}*/
-
-/********** Comput the R² score *************/
-/*VectD Network::score(const vector<MatD> &X, const MatD &y)
-{
-    return r_score (y, predict (X));
-}*/
 
 
 /********** Comput the R² score *************/
