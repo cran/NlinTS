@@ -13,25 +13,25 @@
 
 using namespace std;
 
-VARNN_Export::VARNN_Export (
-							unsigned p,
+VARNN_Export::VARNN_Export (unsigned p,
 							Rcpp::IntegerVector size_Layers,
 							Rcpp::StringVector activations,
 							double learning_rate_init,
-              string  algo,
-							bool bias)
+							string  algo,
+							bool bias,
+							unsigned seed)
 {
 
 	// Rccpp vectors to classical vectors
-    vector<unsigned long> sizeOfLayers_ = Rcpp::as <vector<unsigned long> > (size_Layers);
+    vector<unsigned> sizeOfLayers_ = Rcpp::as <vector<unsigned> > (size_Layers);
     vector<string> activations_ = Rcpp::as <vector<string> > (activations);
 
     // Create the model
-    Obj = VARNN (sizeOfLayers_, p, bias,  learning_rate_init, activations_, algo);
+    Obj = VARNN (sizeOfLayers_, p, bias,  learning_rate_init, activations_, algo, seed);
   }
 
 
-void VARNN_Export::fit (Rcpp::DataFrame Df, int iters)
+void VARNN_Export::fit (Rcpp::DataFrame Df, unsigned iters, unsigned batch_size)
 {
 
     vector<vector<double> > Mat = Rcpp::as < vector<vector<double> > > (Df);
@@ -48,7 +48,7 @@ void VARNN_Export::fit (Rcpp::DataFrame Df, int iters)
         i++;
     }
 
-    Obj.fit (M, unsigned (iters));
+    Obj.fit (M, iters, batch_size);
 }
 
 
@@ -88,23 +88,6 @@ Rcpp::DataFrame VARNN_Export::forecast (Rcpp::DataFrame DF)
       return dataFrame;
 
  }
-
-void VARNN_Export::train (Rcpp::DataFrame DF)
-{
-    vector<vector<double> > Mat = Rcpp::as < vector<vector<double> > > (DF);
-    int i = 0, nc = Mat.size();
-    Struct::CMatDouble P (nc);
-
-    // Conversion des données dataFrame en matrice en C++
-    while(i < nc)
-    {
-        for (auto Value = Mat[i].begin () ; Value != Mat[i].end () ; ++Value)
-            P[i].push_back (*Value);
-        i++;
-    }
-
-    Obj.train (P);
-}
 
 Rcpp::NumericVector VARNN_Export::getSSR ()
 {

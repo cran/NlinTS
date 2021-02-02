@@ -10,10 +10,12 @@ nlin_causality.test(
   lag,
   LayersUniv,
   LayersBiv,
-  iters = 100,
-  learningRate = 0.1,
+  iters = 50,
+  learningRate = 0.01,
   algo = "sgd",
+  batch_size = 10,
   bias = TRUE,
+  seed = 0,
   activationsUniv = vector(),
   activationsBiv = vector()
 )
@@ -35,7 +37,11 @@ nlin_causality.test(
 
 \item{algo}{String argument, for the optimisation algorithm to use, in choice ["sgd", "adam"]. By default "sgd" (stochastic gradient descent) is used. The algorithm 'adam' is to adapt the learning rate while using "sgd".}
 
+\item{batch_size}{Integer argument for the batch size used in the back-propagation algorithm.}
+
 \item{bias}{Logical argument  for the option of using the bias in the networks.}
+
+\item{seed}{Integer value for the random seed used in the random generation of the weights of the network (a value = 0 will use the clock as random generator seed).}
 
 \item{activationsUniv}{String vector for the activations functions to use (in choice ["sigmoid", "relu", "tanh"]) for the univariate model. The length of this vector is the number of hidden layers plus one (the output layer). By default, the relu activation function is used in hidden layers, and the sigmoid in the last layer.}
 
@@ -60,6 +66,6 @@ A non-linear test of causality using artificial neural networks. Two MLP artific
 library (timeSeries) # to extract time series
 library (NlinTS)
 data = LPP2005REC
-model = nlin_causality.test (data[,1], data[,2], 2, c(2), c(4),iters=20)
+model = nlin_causality.test (data[,1], data[,2], 2, c(2), c(4), 50, 0.01, "sgd", 30, TRUE, 5)
 model$summary ()
 }

@@ -1,21 +1,95 @@
 #include<Rcpp.h>
+#include <math.h>
+#include <random>
 #include "../inst/include/utils.h"
 
+vector<unsigned> random_bernoulli (unsigned n, double p, unsigned seed)
+{
+    int count = 0, i;
+    vector<unsigned> V (n);
+
+    std::default_random_engine generator;
+    if (seed == 0)
+        generator. seed (std::chrono::system_clock::now().time_since_epoch().count());
+    else
+        generator. seed (seed);
+    std::bernoulli_distribution distribution(p);
+
+    for (unsigned i=0; i<n; ++i)
+    {
+        V[i] = distribution (generator);
+        if (V[i] == 1)
+            ++count;
+    }
+
+    // equilibrate classes
+    if (count > (n * p))
+    {
+        i = 0;
+        while (count > (n * p))
+        {
+            if (V[i] == 1)
+            {
+                V[i] = 0;
+                --count;
+            }
+            ++i;
+        }
+    }
+    else if (count < (n * p))
+    {
+        i = 0;
+        while (count < (n * p))
+        {
+            if (V[i] == 0)
+            {
+                V[i] = 1;
+                ++count;
+            }
+            ++i;
+        }
+    }
+    return (V);
+}
 /******************************/
-double get_random()
+double get_random(double min, double max, unsigned seed)
 {
     static std::default_random_engine e;
-    e. seed (5);
-    static std::uniform_real_distribution<double> dis(0.0, 0.1); // rage 0 - 1
+    if (seed == 0)
+        e. seed (std::chrono::system_clock::now().time_since_epoch().count());
+    else
+        e. seed (seed);
+
+    static std::uniform_real_distribution<double> dis(min, max);
     return dis(e);
 }
-
 /******************************/
-vector <double> random_vector (unsigned long size)
+vector <double> random_vector (unsigned size, double min, double max, unsigned seed)
 {
     vector<double> nums;
      for (unsigned long i = 0; i < size; ++i)
-         nums. push_back (get_random() * 2.0 / sqrt (size));
+         nums. push_back (get_random(min, max, seed));
+
+     return nums;
+}
+/******************************/
+double get_random_normal(double mean, double std, unsigned seed)
+{
+    std::default_random_engine generator;
+    if (seed == 0)
+        generator. seed (std::chrono::system_clock::now().time_since_epoch().count());
+    else
+        generator. seed (seed);
+
+    std::normal_distribution<double> dis(mean, std);
+    return dis (generator);
+}
+/******************************/
+vector <double> random_normal_vector (unsigned long size, double mean, double std, unsigned seed)
+{
+    vector<double> nums;
+     for (unsigned long i = 0; i < size; ++i)
+         nums. push_back (get_random (mean, std, seed));
 
      return nums;
 }
@@ -217,6 +291,29 @@ MatD matrix_sum (const MatD & A, const MatD & B)
     return RES;
 }
 
+/************************************/
+VectD matrix_mean (const MatD &A)
+{
+
+    unsigned long m = A. size ();
+    unsigned long n = A[0]. size ();
+    if (m == 0 or n == 0)
+    {
+        Rcpp::Rcout << "\nError when  calculating the mean of an empty matrix. \n";
+        Rcpp::stop ("\n.");
+    }
+
+    VectD Res (n, 0);
+
+    for (unsigned long j = 0 ; j < n ; ++j)
+        for (unsigned long i = 0 ; i < m ; ++i)
+            Res[j] += A[i][j];
+
+    for (auto & val : Res)
+        val /= n;
+
+    return Res;
+}
 
 /************************************/
 double min_vect (const vector<double> & Vect)
@@ -456,4 +553,56 @@ VectD diff_activation (const VectD & A, const string & f)
         res = VectD (A. size (), 1);
 
     return res;
+}
+
+/********************************/
+vector<string> split_str(const std::string& str, char delim)
+{
+    vector<string> cont;
+    std::stringstream ss(str);
+    std::string token;
+    while (std::getline(ss, token, delim)) {
+        cont.push_back(token);
+    }
+    return cont;
+}
+
+/********************************/
+vector<string> split (const string &line, const char & sep)
+{
+     vector<string> out;
+     string value = "";
+     unsigned inc(0);
+     for (auto c = line.begin(); c != (line.end()); ++c)
+     {
+        if (*c != sep)
+           value.push_back(*c);
+        if( *c == sep || (inc == (line.size() - 1)))
+        {
+            out.push_back(value);
+            value.clear();
+        }
+        ++ inc;
+     }
+     return out;
+}
+
+/********************************/
+vector<double> split_d (const string &line, const char & sep)
+{
+     vector<double> out;
+     string value = "";
+     unsigned inc(0);
+     for (auto c = line.begin(); c != (line.end()); ++c)
+     {
+        if (*c != sep)
+           value.push_back(*c);
+        if( *c == sep || (inc == (line.size() - 1)))
+        {
+            out.push_back (std::stod (value));
+            value.clear();
+        }
+        ++ inc;
+     }
+     return out;
 }

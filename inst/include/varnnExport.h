@@ -15,7 +15,6 @@
 
 #pragma once
 
-
 #include <Rcpp.h>
 #include "struct.h"
 #include "varnn.h"
@@ -27,18 +26,19 @@ private:
     VARNN Obj;
 
 public:
-    VARNN_Export (
-    			        unsigned p,
-				          Rcpp::IntegerVector,
-                  Rcpp::StringVector activations,
-                  double learning_rate_init,
-                  string  algo,
-                  bool bias);
+    VARNN_Export (unsigned p,
+                Rcpp::IntegerVector,
+                Rcpp::StringVector activations,
+                double learning_rate_init,
+                string  algo,
+                bool bias,
+                unsigned seed);
 
     VARNN_Export(){};
    ~VARNN_Export(){};
     Rcpp::DataFrame forecast (Rcpp::DataFrame DF);
-    void fit (Rcpp::DataFrame, int);
-    void train (Rcpp::DataFrame DF);
+    void fit (Rcpp::DataFrame, unsigned, unsigned);
+    void save (const string & filename) {Obj. save (filename);}
+    void load (const string & filename) {Obj. load (filename);};
     Rcpp::NumericVector getSSR ();
 };

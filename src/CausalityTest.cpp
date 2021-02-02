@@ -87,9 +87,9 @@ causalityTest::causalityTest (Rcpp::NumericVector  ts1_,
 // The Summary function
 void causalityTest::summary ()
 {
-    Rcpp::Rcout <<  "------------------------------------------------\n";
-    Rcpp::Rcout <<  "        the Granger causality test" << "\n";
-    Rcpp::Rcout <<  "------------------------------------------------\n";
+    Rcpp::Rcout <<  "--------------------\n";
+    Rcpp::Rcout <<  "    Test summary"  << "\n";
+    Rcpp::Rcout <<  "--------------------\n";
     Rcpp::Rcout <<  "The lag parameter: p = "<< lag << "\n";
     Rcpp::Rcout <<  "The Granger causality Index: GCI = "<< GCI << "\n";
     Rcpp::Rcout <<  "The value of the F-test: "<< Ftest << "\n";

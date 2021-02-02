@@ -1,24 +1,72 @@
+/*
+  This file is part of NlinTS. NlinTS is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 2 of the License, or
+  (at your option) any later version.
+  NlinTS is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+*/
+
 #include<Rcpp.h>
 #include <vector>
 #include <math.h>
 #include "../inst/include/dense.h"
-#include "../inst/include/operateurs.h"
+#include "../inst/include/utils.h"
 
 using namespace std;
 
 /***********************************/
-Dense::Dense(unsigned long _n_neurons, string _activation /*=sigmoid*/, double learning_rate_init_ /*= 0.01*/, bool bias_ /*= 1*/,  const string & alg /*= "sgd"*/)
+Dense::Dense(unsigned _n_neurons, string _activation, double learning_rate_init_, bool bias_,  const string & alg, unsigned _seed, double _drop)
     :n_neurons (_n_neurons),
     activation (_activation),
     learning_rate_init (learning_rate_init_),
-    output_layer (false),
     algo (alg),
+    seed (_seed),
+    drop (_drop),
+    output_layer (false),
     beta_1 (0.9),
     beta_2 (0.999)
+
 {
+
+    if (algo. compare ("sgd") != 0 and algo. compare ("adam") != 0)
+    {
+        Rcpp::Rcout << "Error, optimization algo not known in dense layer constructor, it must be in choice: [sgd, adam]." << endl;
+        Rcpp::stop ("\n.");
+    }
 
     /* convert bias (bool) to unsigned */
     bias = bias_?1:0;
+}
+
+/*********** copy constructor **************/
+Dense::Dense (const Dense & denseLayer)
+{
+    n_neurons = denseLayer. n_neurons;
+    activation = denseLayer. activation;
+    learning_rate_init = denseLayer. learning_rate_init;
+    output_layer = denseLayer. output_layer;
+    algo = denseLayer. algo;
+    bias = denseLayer. bias;
+    seed = denseLayer. seed;
+    drop = denseLayer. drop;
+    beta_1 = denseLayer. beta_1;
+    beta_2 = denseLayer. beta_2;
+}
+
+/***********************************/
+void Dense::set_input_dim (const vector<unsigned> & in_dim)
+{
+
+    if (in_dim. size () != 3 or in_dim[0] != 1 or in_dim[1] != 1)
+    {
+        Rcpp::Rcout << "Error in dense layer when setting the input dimension, the input should be a tensor of 1 dimension.\n";
+        Rcpp::stop ("\n.");
+    }
+    this->input_dim = in_dim[2];
+    this->input.reserve (in_dim[2] + bias);
 
     /* Allocate memory for the vectors of the layer */
     this->net. reserve (n_neurons);
@@ -29,29 +77,17 @@ Dense::Dense(unsigned long _n_neurons, string _activation /*=sigmoid*/, double l
     this->V. resize (n_neurons);
     this->W. resize (n_neurons);
     this->DeltaW. resize (n_neurons);
-}
-
-/***********************************/
-void Dense::set_input_dim (vector<unsigned long> in_dim)
-{
-    if (in_dim. size () > 1)
-    {
-        Rcpp::Rcout << "Error in input dimension for Dense layer, the input should be a 1D vector.\n";
-        Rcpp::stop ("\n.");
-    }
-    this->input_dim = in_dim[0];
-    this->input.reserve (in_dim[0] + bias);
-    // set uniform weights for each neuron
+    this->changeW. resize (n_neurons);
 
     // init  parameters (including adam parameters)
     for (unsigned long i = 0; i < this->n_neurons; ++i)
     {
-        //this->alpha[i]. resize (input_dim + unsigned (this->bias), this->learning_rate_init);
-        for (unsigned j = 0; j < this->input_dim + this->bias; ++j){
-          this->alpha[i]. push_back (this->learning_rate_init);}
-
+        this->alpha[i]. resize (this->input_dim + this->bias, learning_rate_init);
         this->DeltaW[i]. resize (this->input_dim + this->bias, 0.0);
-        this->W[i] =  random_vector (this->input_dim + this->bias);
+        this->changeW[i]. resize (this->input_dim + this->bias, 0.0);
+        //this->W[i] =  random_vector (this->input_dim + this->bias);
+        double variance = double(input_dim + n_neurons + bias) / 2.0;
+        this->W[i] =  random_normal_vector (this->input_dim + this->bias, 0, 1.0 / variance, seed*(i+1));
         this->M[i]. resize (this->input_dim + this->bias, 0.0);
         this->V[i]. resize (this->input_dim + this->bias, 0.0);
     }
@@ -63,60 +99,75 @@ bool Dense::is_output(){return output_layer;}
 
 void Dense::set_output_layer(bool last){output_layer = last;}
 
-vector<unsigned long> Dense::get_output_dim(){return {n_neurons};}
+vector<unsigned> Dense::get_output_dim(){return {1,1,n_neurons};}
 
-vector<unsigned long> Dense::get_input_dim(){return {input_dim};}
+vector<unsigned> Dense::get_input_dim(){return {1,1,input_dim};}
 /***********************************/
-MatD Dense::simulate (const MatD & input_, bool store)
+tensorD Dense::simulate (const tensorD & input_, bool store)
 {
-    if (input_. size () > 1)
+    if (input_. size () > 1 or input_[0]. size () > 1)
     {
-        Rcpp::Rcout << "Input of the dense layer is not correct. Matrix of 1 row is required. \n";
-        Rcpp::Rcout << "The input matrix contains " << input_. size () << ".\n";
+        Rcpp::Rcout << "Input of the dense layer is not correct. \n";
+        Rcpp::Rcout << "The input matrix is of size: (" << input_. size () << ", " << input_[0]. size () << ").\n";
+        Rcpp::Rcout << "The input of the layer is: (1, " << input_dim << ").\n";
         Rcpp::stop ("\n.");
     }
 
-    if (input_[0]. size () != this->input_dim)
+    if (input_[0][0]. size () != this->input_dim)
     {
         Rcpp::Rcout << "      The input of the dense layer is not correct.. \n";
-        Rcpp::Rcout << "      The input dim must be: " << this->input_dim << ".\n";
+        Rcpp::Rcout << "      The input dimension must be: " << this->input_dim << ".\n";
         Rcpp::Rcout << "      The input line is of size: " <<input_. size () << ".\n";
         Rcpp::stop ("\n.");
     }
 
-    VectD output;
+    MatD output (1);
     VectD input__;
-    input__ = input_[0];
+    input__ = input_[0][0];
 
     if (this->bias)
         input__.insert (input__. begin (), 1);
 
     // output without activation function
-    output = matrix_dot (this->W, input__);
+    output[0] = matrix_dot (this->W, input__);
 
-    if (store == true)
+    if (store)
     {
-        net.clear ();
-        this->input. clear ();
-        net = output;
+        // store the last input
         this->input = input__;
-    }
-    // output with activation function
-    output = vect_activation (output, activation);
 
-    if (store == true)
+        // apply dropout
+        if (drop > 0)
+        {
+            drop_mask = random_bernoulli (n_neurons, 1- drop, seed);
+            for (unsigned k = 0; k < n_neurons; ++k)
+                if (drop_mask[k] == 0)
+                    output[0][k] = 0;
+        }
+
+        net = output[0];
+        // activate the output
+        output[0] = vect_activation (output[0], activation);
+        this->O = output[0];
+    }
+
+    else
     {
-        this->O.clear ();
-        this->O = output;
+        if (drop > 0)
+            for (unsigned k = 0; k < n_neurons; ++k)
+                output[0][k] *= double (1- drop);
+
+        // activate the output
+        output[0] = vect_activation (output[0], activation);
     }
 
     return {output};
 }
 
 /***********************************/
-void Dense::computeErrors(const MatD & nextErrors)
+void Dense::computeErrors(const tensorD & nextErrors)
 {
-    if (nextErrors. size () > 1)
+    if (nextErrors. size () > 1 or nextErrors[0]. size () > 1)
     {
         Rcpp::Rcout << "Error to backpropagate to the dense layer is not correct. Matrix of 1 row is required. \n";
         Rcpp::Rcout << "The output errors matrix contains " << nextErrors. size () << ".\n";
@@ -124,83 +175,92 @@ void Dense::computeErrors(const MatD & nextErrors)
     }
 
     /* nextErrors: errors of the next layer, and if the layer is an output layer, it is : (expected out - output) */
-    if (nextErrors[0]. size () != this->n_neurons)
+    if (nextErrors[0][0]. size () != this->n_neurons)
     {
         Rcpp::Rcout << "Error in computing the error, output dimensions are not correct.\n";
         Rcpp::Rcout << "Expecting " <<  this->n_neurons << " as output dimensions \n";
-        Rcpp::Rcout << "While, the given errors are of size: " << nextErrors. size ();
+        Rcpp::Rcout << "While, the given errors are of size: " << nextErrors[0][0]. size ();
     }
 
-    this->E. clear ();
+    E = matrix_dot (nextErrors[0][0], diff_activation (net, activation));
 
-    VectD diff_net =  diff_activation (net, activation);
-
-    E = matrix_dot (nextErrors[0], diff_net);
+    //  E * Transpose (I)
+    for (unsigned i = 0; i < this->n_neurons; ++i)
+        for (unsigned j = 0; j < input_dim + bias; ++j)
+            changeW[i][j] += this->E[i] *  this->input[j];
 }
 
 /***********************************/
-void Dense::updateWeights (unsigned numb_iter)
+void Dense::updateWeights (unsigned numb_iter,  unsigned batch_size)
 {
-    double momentum (0);
-    double m_hat (0), v_hat (0), delta_alpha (0);
-    if (algo == "sgd")
-         momentum = 0.9;
-    else
-         momentum = 0.0;
+    double momentum (0.9);
 
-    unsigned n_input = this->input_dim + this->bias;
+    // compute the mean of changes of weight
+    matrix_dot (changeW, 1.0 / double (batch_size));
+
+
+    // apply momentum
+    matrix_dot (changeW, double (1 - momentum));
+    matrix_dot (DeltaW, momentum);
+    DeltaW = matrix_sum (DeltaW, changeW);
 
     for (unsigned j = 0; j < this->n_neurons; ++j)
     {
-        for (unsigned i = 0; i < n_input; ++i)
+        for (unsigned i = 0; i < input_dim + bias; ++i)
         {
-            //break;
-            this->DeltaW[j][i] =  momentum * this->DeltaW[j][i] + (1 - momentum) * this->input[i] * this->E[j];
-
-            // when using the momentum, some time DeltaW[j][i] decrease a lot, so we fix 0.000001 as a min
-            /*if (this->DeltaW[j][i] < 0.000001)
-                this->DeltaW[j][i] = 0.0;*/
-
-            this->W[j][i] -= alpha[j][i]  * this->DeltaW[j][i];
+            W[j][i] -= alpha[j][i]  * DeltaW[j][i];
+            // initialize changes of weights
+            changeW[j][i] = 0;
         }
-      }
+     }
 
     // update learning rate
     if (algo == "adam")
     {
         for (unsigned j = 0; j < this->n_neurons; ++j)
         {
-             for (unsigned i = 0; i < n_input; ++i)
+             for (unsigned i = 0; i < input_dim + bias; ++i)
                 {
+                    //Rcpp::Rcout <<numb_iter << "   " <<  this->M[j][i] << "   " <<  this->W[j][i] << endl;
                     this->M[j][i] = (this->beta_1 * this->M[j][i]) + ((1 - this->beta_1) * this->DeltaW[j][i]) ;
                     this->V[j][i] = (this->beta_2 * this->V[j][i]) + ((1 - this->beta_2) * this->DeltaW[j][i] * this->DeltaW[j][i]) ;
 
-                    m_hat = this->M[j][i]   / (1.0 - double (pow (this->beta_1, numb_iter + 1)));
-                    v_hat = this->V[j][i]  / (1.0 - double (pow (this->beta_2, numb_iter + 1)));
+                    double m_hat = this->M[j][i]   / (1.0 - double (pow (this->beta_1, numb_iter + 1)));
+                    double v_hat = this->V[j][i]  / (1.0 - double (pow (this->beta_2, numb_iter + 1)));
 
-                    // the adapted learning rate shouldn't be less that 0.00001 and sould not be greater that initial rate
-                    if ((this->alpha[j][i] - delta_alpha) > 0.00001 and (this->alpha[j][i] - delta_alpha) <= learning_rate_init)
-                    delta_alpha = (0.001 * m_hat) / (sqrt (v_hat) + 0.00000001);
+                    double delta_alpha = (0.001 * m_hat) / (sqrt (v_hat) + 0.00000001);
 
-                    // the adapted learning rate shouldn't be less that 0.001
-                    if (  delta_alpha < (this->alpha[j][i] - 0.001) )
-                        this->alpha[j][i] = this->alpha[j][i] - delta_alpha;
+                    // Making sure that the adapted learning rate shouldn't be less that 0.00001 and sould not be greater that initial rate
+                    if ((this->alpha[j][i] - delta_alpha) >= 0.00001 and ((this->alpha[j][i] - delta_alpha) <= learning_rate_init))
+                        this->alpha[j][i] -= delta_alpha;
                 }
           }
     }
 }
 
 /*********************************/
-// return the errors to backpropagate to the previous layer
-MatD Dense::get_errors ()
+tensorD Dense::get_output()
 {
-    VectD A = matrix_dot (Transpose (this->W), this->E);
+    MatD out (1);
+    out[0] = O;
+    return {out};
+}
+
+/*********************************/
+// return the errors to backpropagate to the previous layer: gradient of input
+tensorD Dense::get_errors ()
+{
+    MatD A (1);
+    A[0] = matrix_dot (Transpose (this->W), this->E);
 
     if (this->bias == 1)
-        A. erase (A. begin ());
+        A[0]. erase (A[0]. begin ());
+
     return {A};
 }
 
-MatD Dense::get_weights(){return this->W;}
+/*********************************/
+tensorD Dense::get_weights(){return {this->W};}
 
+/*********************************/
 string Dense::getType(){return "dense";}

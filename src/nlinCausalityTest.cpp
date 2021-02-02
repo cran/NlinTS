@@ -36,24 +36,25 @@ void nlinCausalityTest::buildModels ( Rcpp::IntegerVector  hiddenLayersOfUnivMod
                                       Rcpp::StringVector activationsBivModel,
                                       double learningRateInit,
                                       string algo,
-                                      bool bias_)
+                                      bool bias_,
+                                      unsigned seed)
 {
 
     bias = bias_;
     // Size of hidden layers
-    sizeOfLayersModel1 = Rcpp::as < vector<unsigned long>  > (hiddenLayersOfUnivModel);
-    sizeOfLayersModel2 = Rcpp::as < vector<unsigned long>  > (hiddenLayersOfBivModel);
+    sizeOfLayersModel1 = Rcpp::as < vector<unsigned>  > (hiddenLayersOfUnivModel);
+    sizeOfLayersModel2 = Rcpp::as < vector<unsigned>  > (hiddenLayersOfBivModel);
 
     // Activations vectors
     vector<string> activationsModel1 = Rcpp::as <vector<string> > (activationsUnivModel);
-	  vector<string> activationsModel2 = Rcpp::as <vector<string> > (activationsBivModel);
+    vector<string> activationsModel2 = Rcpp::as <vector<string> > (activationsBivModel);
 
-    univariateModel = VARNN (sizeOfLayersModel1, lag, bias, learningRateInit, activationsModel1, algo);
-    bivariateModel = VARNN (sizeOfLayersModel2, lag, bias, learningRateInit, activationsModel2, algo);
+    univariateModel = VARNN (sizeOfLayersModel1, lag, bias, learningRateInit, activationsModel1, algo, seed);
+    bivariateModel = VARNN (sizeOfLayersModel2, lag, bias, learningRateInit, activationsModel2, algo, seed);
 }
 
 /************************************/
-void nlinCausalityTest::fit (Rcpp::NumericVector  ts1_, Rcpp::NumericVector  ts2_, unsigned iterations)
+void nlinCausalityTest::fit (Rcpp::NumericVector  ts1_, Rcpp::NumericVector  ts2_, unsigned iterations, unsigned batch_size)
 {
     for (const auto val:ts1_)
         ts1.push_back (val);
@@ -73,12 +74,12 @@ void nlinCausalityTest::fit (Rcpp::NumericVector  ts1_, Rcpp::NumericVector  ts2
     M.push_back (ts1);
 
     // Fit the model on univariate ts
-    univariateModel.fit (M, iterations);
+    univariateModel.fit (M, iterations, batch_size);
 
     // add second variable
     M.push_back(ts2);
     // Fit Model2
-    bivariateModel.fit (M,  iterations);
+    bivariateModel.fit (M,  iterations, batch_size);
 
     // Evaluate the two models
     RSS0 = univariateModel.getSSR () [0];

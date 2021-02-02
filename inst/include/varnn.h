@@ -26,36 +26,42 @@ using namespace Struct;
 class VARNN
 {
   private:
-      unsigned  numLayers;
-      bool bias;
+
+      std::vector<unsigned> sizeOfLayers;
       unsigned  lag;  // lag parameter
+      bool bias;
       double learning_rate_init; // initial learning rate
+      std::vector<string> activations;
+      string algo; //backpropagation algorithm
+      unsigned seed; // for random generation of the weights of the network
       unsigned long  Nb_Ln ;    // numbre of observations
       unsigned long  Nb_Cl ;    // nombre of variables
-
       string activation; //activation function
-      string algo; //backpropagation algorithm
+      unsigned  numLayers;
 
-      std::vector<unsigned long> sizeOfLayers;
-      std::vector<string> activations;
-      //std::shared_ptr <Network> mlp;
       Network mlp;
       std::vector<double> SSR;
       Struct::CMatDouble inputMat ;    // input data
 
   public:
-      VARNN (const vector<unsigned long> & sizeOfLayers, unsigned p, bool bias, double learning_rate_init = 0.1, const  std::vector<string> & activations = {}, const string & algo = "sgd");
+      VARNN (const vector<unsigned> & sizeOfLayers,
+             unsigned p,
+             bool bias,
+             double learning_rate_init,
+             const  std::vector<string> & activations,
+             const string & algo,
+             unsigned seed);
       VARNN(){}
      ~VARNN(){}
 
       /*********************************************************/
-      void fit (const CMatDouble & M, unsigned iterations);
+      void fit (const CMatDouble & M, unsigned iterations, unsigned batch_size);
 
       /*********************************************************/
       Struct::CMatDouble forecast (const Struct::CMatDouble & M);
 
-      /*********************************************************/
-      void train (const Struct::CMatDouble & M);
+      void save (const string & filename) {mlp. save (filename);}
+      void load (const string & filename) {mlp. load (filename);};
 
       Struct::CVDouble getMSE ();
       Struct::CVDouble getMAE ();

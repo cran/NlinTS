@@ -23,11 +23,12 @@ using namespace Rcpp;
 // 'The VARMLP module
 RCPP_MODULE (VAR_MLP) {
   class_<VARNN_Export> ("VARNN_Export")
-        .constructor <unsigned, Rcpp::IntegerVector, Rcpp::StringVector, double, string, bool> ()
+        .constructor <unsigned, Rcpp::IntegerVector, Rcpp::StringVector, double, string, bool, unsigned> ()
         .property("MSE", &VARNN_Export::getSSR, "mean squared error of the model on training data")
         .method ("fit", &VARNN_Export::fit, "fit the model")
-        .method ("train", &VARNN_Export::train, "Update the model from input data")
-        .method ("forecast", &VARNN_Export::forecast, "Computes the predictions");
+        .method ("forecast", &VARNN_Export::forecast, "Computes the predictions")
+        .method ("save", &VARNN_Export::save, "save the model in a text file.")
+        .method ("load", &VARNN_Export::load, "load the model from a text file.");
 }
 
 // 'The dickey fuller test module.

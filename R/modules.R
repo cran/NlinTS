@@ -20,13 +20,17 @@ library (Rdpack)
 #' @param sizeOfHLayers Integer vector that contains the size of hidden layers, where the length of this vector is the number of hidden layers, and the i-th element is the number of neurons in the i-th hidden layer.
 #' @param lag The lag parameter.
 #' @param iters The number of iterations.
-#' @param bias Logical, true if the bias have to be used in the network.
 #' @param learningRate The learning rate to use, O.1 by default, and if Adam algorithm is used, then it is the initial learning rate.
 #' @param algo String argument, for the optimisation algorithm to use, in choice ["sgd", "adam"]. By default "sgd" (stochastic gradient descent) is used. The algorithm 'adam' is to adapt the learning rate while using "sgd".
+#' @param batch_size Integer argument for the batch size used in the back-propagation algorithm.
+#' @param bias Logical, true if the bias have to be used in the network.
+#' @param seed Integer value for the seed used in the random generation of the weights of the network (a value = 0 will use the clock as random generator seed).
 #' @param activations String vector for the activations functions to use (in choice ["sigmoid", "relu", "tanh"]). The length of this vector is the number of hidden layers plus one (the output layer). By default, the relu activation function is used in hidden layers, and the sigmoid in the last layer.
 
-#' @return train (df):  updates the parameters of the model using the input dataframe.
-#' @return forecast (df):  makes forecasts of an given dataframe. The forecasts include the forecasted row based on each previous "lag" rows, where the last one is the next forecasted row of  df.
+#' @return fit (df, iterations, batch_size):  fit/update the weights of the model from  the dataframe.
+#' @return forecast (df):   makes forecasts of an given dataframe. The forecasts include the forecasted row based on each previous "lag" rows, where the last one is the next forecasted row of  df.
+#' @return save (filename): save the model in a text file.
+#' @return load (filename): load the model from a text file.
 #' @examples
 #' library (timeSeries) # to extract time series
 #' library (NlinTS)
@@ -34,15 +38,15 @@ library (Rdpack)
 #' data = LPP2005REC
 #' # Predict the last row of the data
 #' train_data = data[1:(nrow (data) - 1), ]
-#' model = varmlp (train_data, 1, c(10), 20, bias = TRUE, learningRate=0.1, algo = "sgd");
+#' model = varmlp (train_data, 1, c(10), 50, 0.01, "sgd", 30, TRUE, 0);
 #' predictions = model$forecast (train_data)
 #' print (predictions[nrow (predictions),])
 
-varmlp <- function(df, lag, sizeOfHLayers, iters=100, bias = TRUE, learningRate=0.1, algo = "sgd", activations=vector()){
+varmlp <- function(df, lag, sizeOfHLayers, iters=50, learningRate=0.01, algo = "sgd", batch_size = 10, bias = TRUE, seed = 5, activations=vector()){
     #neuralNet =  Module ('varmlp', PACKAGE = "NlinTS")
     varp = .neuralNet$VARNN_Export
-    v = new (varp, lag, sizeOfHLayers, activations, learningRate, algo, bias)
-    v$fit (df,iters)
+    v = new (varp, lag, sizeOfHLayers, activations, learningRate, algo, bias, seed)
+    v$fit (df,iters, batch_size)
     return (v)
 }
 
@@ -86,7 +90,9 @@ causality.test <- function(ts1,ts2, lag, diff = FALSE){
 #' @param iters The number of iterations.
 #' @param learningRate The learning rate to use, O.1 by default, and if Adam algorithm is used, then it is the initial learning rate.
 #' @param algo String argument, for the optimisation algorithm to use, in choice ["sgd", "adam"]. By default "sgd" (stochastic gradient descent) is used. The algorithm 'adam' is to adapt the learning rate while using "sgd".
+#' @param batch_size Integer argument for the batch size used in the back-propagation algorithm.
 #' @param bias Logical argument  for the option of using the bias in the networks.
+#' @param seed Integer value for the random seed used in the random generation of the weights of the network (a value = 0 will use the clock as random generator seed).
 #' @param activationsUniv String vector for the activations functions to use (in choice ["sigmoid", "relu", "tanh"]) for the univariate model. The length of this vector is the number of hidden layers plus one (the output layer). By default, the relu activation function is used in hidden layers, and the sigmoid in the last layer.
 #' @param activationsBiv String vector for the activations functions to use (in choice ["sigmoid", "relu", "tanh"]) for the bivariate model. The length of this vector is the number of hidden layers plus one (the output layer). By default, the relu activation function is used in hidden layers, and the sigmoid in the last layer.
 
@@ -98,15 +104,15 @@ causality.test <- function(ts1,ts2, lag, diff = FALSE){
 #' library (timeSeries) # to extract time series
 #' library (NlinTS)
 #' data = LPP2005REC
-#' model = nlin_causality.test (data[,1], data[,2], 2, c(2), c(4),iters=20)
+#' model = nlin_causality.test (data[,1], data[,2], 2, c(2), c(4), 50, 0.01, "sgd", 30, TRUE, 5)
 #' model$summary ()
 
-nlin_causality.test <- function (ts1,ts2,lag,LayersUniv,LayersBiv, iters=100, learningRate = 0.1, algo = "sgd", bias=TRUE, activationsUniv = vector(), activationsBiv = vector())
+nlin_causality.test <- function (ts1,ts2,lag,LayersUniv,LayersBiv, iters=50, learningRate = 0.01, algo = "sgd",  batch_size=10, bias=TRUE, seed = 0, activationsUniv = vector(), activationsBiv = vector())
 {
     model = .dynCaus.test $ nlinCausalityTest ;
     v = new (model, lag) ;
-    v$buildModels (LayersUniv, LayersBiv, activationsUniv, activationsBiv, learningRate, algo, bias) ;
-    v$fit (ts1, ts2, iters) ;
+    v$buildModels (LayersUniv, LayersBiv, activationsUniv, activationsBiv, learningRate, algo, bias, seed) ;
+    v$fit (ts1, ts2, iters, batch_size) ;
     return (v) ;
 }
 

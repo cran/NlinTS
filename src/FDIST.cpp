@@ -74,7 +74,7 @@ double inBeta(double x, double a, double b) {
 }
  // p-value of the f-test
 double getPvalue(double f, double n1, double n2) {
-    if (f <= 0.0)
+    if (f < 0.0)
         return 1.0;
     else
       return inBeta(n2 / (n2 + n1 * f), n2 / 2.0, n1 / 2.0);

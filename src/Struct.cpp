@@ -54,7 +54,7 @@ double CVDouble::CMean () const //throw (Exception)
 double CVDouble::StdDev () const //throw (Exception)
 {
     if (0 == this->size ())
-               throw Exception ("Vector of size null");
+        throw Exception ("Vector of size null");
     double Sum = 0.0, Mean = this->Mean();
     for( auto it = this->begin() ; it != this->end() ; ++it)
     {
@@ -106,7 +106,7 @@ void   CVDouble::Standardise () //throw (Exception)
 void   CVDouble::Normalise () //throw (Exception)
 {
     if (0 == this->size ())
-               throw Exception ("Vector of size null");
+        throw Exception ("Vector of size null");
     double Min = this->Min ();
     double Max = this->Max ();
     if (abs (Max) > abs (Min))
@@ -123,8 +123,8 @@ void   CVDouble::Normalise () //throw (Exception)
 
 void CVDouble::Add  (double & m)
 {
-        for (auto it = this->begin () ; it != this->end () ; ++it)
-            (*it) += m;
+    for (auto it = this->begin () ; it != this->end () ; ++it)
+        (*it) += m;
 }
 
 /***********************************************************************************/
@@ -528,17 +528,17 @@ void algebraicOutlier (CMatDouble & M, unsigned fstd)
 {
 
     double avg, stdev;
-for (auto cVec = M.begin () ; cVec != M.end () ; ++cVec)
-    {
-    avg = cVec->Mean ();
-    stdev = cVec->StdDev ();
-    for (auto cVal = cVec->begin () ; cVal != cVec->end () ; ++cVal)
-       {
-        if (!std::isnan (*cVal))
-            if ( abs ((*cVal - avg) / stdev) >= (double) fstd)
-                    (*cVal) =  NAN;
+    for (auto cVec = M.begin () ; cVec != M.end () ; ++cVec)
+        {
+        avg = cVec->Mean ();
+        stdev = cVec->StdDev ();
+        for (auto cVal = cVec->begin () ; cVal != cVec->end () ; ++cVal)
+           {
+            if (!std::isnan (*cVal))
+                if ( abs ((*cVal - avg) / stdev) >= (double) fstd)
+                        (*cVal) =  NAN;
             }
-     }
+         }
 }
 /************************************************************************/
 } // namespace Struct

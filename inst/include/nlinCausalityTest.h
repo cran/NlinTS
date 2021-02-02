@@ -31,8 +31,8 @@ class nlinCausalityTest {
       double criticTest;
       bool bias;
 
-      std::vector<unsigned long> sizeOfLayersModel1;
-      std::vector<unsigned long> sizeOfLayersModel2;
+      std::vector<unsigned> sizeOfLayersModel1;
+      std::vector<unsigned> sizeOfLayersModel2;
       VARNN univariateModel;
       VARNN bivariateModel;
 
@@ -54,14 +54,15 @@ class nlinCausalityTest {
 
       void buildModels (Rcpp::IntegerVector  hiddenLayersOfUnivModel,
                         Rcpp::IntegerVector  hiddenLayersOfBivModel,
-                        Rcpp::StringVector activationsUnivModel = {},
-                        Rcpp::StringVector activationsBivModel = {},
-                        double learningRateInit = 0.1,
-                        string algo = "sgd",
-                        bool bias = 1);
+                        Rcpp::StringVector activationsUnivModel,
+                        Rcpp::StringVector activationsBivModel,
+                        double learningRateInit,
+                        string algo,
+                        bool bias,
+                        unsigned seed);
 
 
-      void fit (Rcpp::NumericVector  ts1_, Rcpp::NumericVector  ts2_, unsigned iterations);
+      void fit (Rcpp::NumericVector  ts1_, Rcpp::NumericVector  ts2_, unsigned iterations, unsigned batch_size);
       // The causality index
       double get_gci ();
 
@@ -73,5 +74,8 @@ class nlinCausalityTest {
 
       // The Summary function
       void summary ();
+
+      //void save (const string & filename);
+      //void load (const string & filename);
       };
 #endif

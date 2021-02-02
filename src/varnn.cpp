@@ -15,21 +15,27 @@
 
 using namespace MatrixOperations;
 
-VARNN::VARNN(const vector<unsigned long> &sizeOfLayers, unsigned p, bool bias, double learning_rate_init /*= 0.1*/, const  std::vector<string> & activations /*= {}*/, const string & algo /*= "sgd"*/):
-    bias (bias),
-    lag (p),
-    learning_rate_init (learning_rate_init),
-    algo (algo),
+VARNN::VARNN(const vector<unsigned> &sizeOfLayers,
+            unsigned p,
+            bool bias,
+            double learning_rate_init,
+            const  std::vector<string> & activations,
+            const string & algo,
+            unsigned seed):
     sizeOfLayers (sizeOfLayers),
-    activations (activations)
+    lag (p),
+    bias (bias),
+    learning_rate_init (learning_rate_init),
+    activations (activations),
+    algo (algo),
+    seed (seed)
 {
     numLayers = unsigned (sizeOfLayers.size ()) + 1;
-    //this->mlp = shared_ptr <Network> (new Network ());
     mlp = Network ();
-    //this->mlp = new Network ();
 }
 
-void VARNN::fit(const CMatDouble &M, unsigned iterations)
+/****************************************************/
+void VARNN::fit(const CMatDouble &M, unsigned iterations, unsigned batch_size)
 {
     CMatDouble A, Real;
     CVDouble result, res_out;
@@ -47,17 +53,6 @@ void VARNN::fit(const CMatDouble &M, unsigned iterations)
     // Normalisation
     minMax = inputMat.Normalise ();
 
-    // activations function for eac layer
-    if (activations. size () != numLayers)
-    {
-        activations. clear ();
-        // relu for hidden layers
-        for (unsigned i = 0; i < sizeOfLayers. size (); ++i)
-            activations. push_back("relu");
-
-        // sigmoid for output layer
-         activations. push_back("sigmoid");
-    }
 
     // Construct the matrix of lagged variables (VAR (p) representation)
     for (auto & vec:inputMat)
@@ -67,28 +62,42 @@ void VARNN::fit(const CMatDouble &M, unsigned iterations)
     Y = Real.to_Mat();
 
     // Define the network structure
-    vector<unsigned long> input_dim;
+    vector<unsigned> input_dim ({1,1});
     input_dim. push_back (X[0].size ());
 
-    // input dimension of the network
-    this->mlp.set_input_size (input_dim);
-
-    // hidden layers
-    for (unsigned i = 0; i < sizeOfLayers. size (); ++i)
+    if (this->mlp.get_nb_layers() == 0)
     {
-        Dense * hidenLayer = new Dense (sizeOfLayers[i], activations[i], learning_rate_init, bias, algo);
-        mlp.addLayer (hidenLayer);
-    }
+        // activations function for eac layer
+        if (activations. size () != numLayers)
+        {
+            activations. clear ();
+            // relu for hidden layers
+            for (unsigned i = 0; i < sizeOfLayers. size (); ++i)
+                activations. push_back("relu");
 
-    // output layer
-    Dense * outputLayer = new Dense (Real.size (), activations. back (), learning_rate_init, bias, algo);
-    mlp.addLayer (outputLayer);
+            // sigmoid for output layer
+             activations. push_back("sigmoid");
+        }
+        // input dimension of the network
+        this->mlp.set_input_dim (input_dim);
+
+        // hidden layers
+        for (unsigned i = 0; i < sizeOfLayers. size (); ++i)
+        {
+            Dense * hidenLayer = new Dense (sizeOfLayers[i], activations[i], learning_rate_init, bias, algo, seed, 0);
+            mlp.addLayer (hidenLayer);
+        }
+
+        // output layer
+        Dense * outputLayer = new Dense (Real.size (), activations. back (), learning_rate_init, bias, algo, seed, 0);
+        mlp.addLayer (outputLayer);
+    }
 
     //Summary
     //mlp.summary ();
 
     // train the network
-    mlp.fit (X, Y, iterations, true);
+    mlp.fit (X, Y, iterations, batch_size, "mse", true, 5);
 
     // compute the prediction and transforming them inti CMAtDouble class type
     Predictions = mlp.predict (X);
@@ -104,6 +113,7 @@ void VARNN::fit(const CMatDouble &M, unsigned iterations)
     }
 }
 
+/****************************************************/
 CMatDouble VARNN::forecast(const CMatDouble &M)
 {
     CMatDouble A, Predictions;
@@ -125,9 +135,9 @@ CMatDouble VARNN::forecast(const CMatDouble &M)
     }
     else
     {
-        Rcpp::Rcout << "Error in input dimensions.\n";
-        Rcpp::Rcout << "The model expects a matrix of " << Nb_Cl << " columns. \n";
-        Rcpp::Rcout << "While the input matrix conatins " << Predictions.size () << " columns. \n";
+        Rcpp::Rcout << "Error in the input dimensions.\n";
+        Rcpp::Rcout << "The model expects a matrix of size: " << Nb_Cl << " columns. \n";
+        Rcpp::Rcout << "While the input matrix contains: " << Predictions.size () << " columns. \n";
         Rcpp::stop ("\n.");
     }
 
@@ -136,29 +146,5 @@ CMatDouble VARNN::forecast(const CMatDouble &M)
     return Predictions;
 }
 
-void VARNN::train(const CMatDouble &M)
-{
-    CMatDouble B, present, Res, minMax;
-
-    Res = M;
-
-    minMax = Res.Normalise();
-
-    if (Res.size () == Nb_Cl and Res[0].size () >= lag)
-    {
-        for (auto vec:Res)
-            P_Part (vec, present, B, lag);
-
-        // Train the model
-        mlp.train (B.to_Mat(), present.to_Mat(), 0);
-    }
-    else
-    {
-        Rcpp::Rcout << "Error in input dimensions.\n";
-        Rcpp::Rcout << "The model expects a matrix of " << Nb_Cl << " columns. \n";
-        Rcpp::Rcout << "While the input matrix conatins " << Res.size () << " columns.";
-        Rcpp::stop ("\n.");
-    }
-}
-
+/****************************************************/
 std::vector<double> VARNN::getSSR() {return SSR;}
