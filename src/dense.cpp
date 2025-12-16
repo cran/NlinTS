@@ -72,18 +72,18 @@ void Dense::set_input_dim (const vector<unsigned> & in_dim)
     this->net. reserve (n_neurons);
     this->E. reserve (n_neurons);
     this->O. reserve (n_neurons);
-    this->alpha. resize (n_neurons);
+    //this->alpha. resize (n_neurons);
     this->M. resize(n_neurons);
     this->V. resize (n_neurons);
     this->W. resize (n_neurons);
-    this->DeltaW. resize (n_neurons);
+    //this->DeltaW. resize (n_neurons);
     this->changeW. resize (n_neurons);
 
     // init  parameters (including adam parameters)
     for (unsigned long i = 0; i < this->n_neurons; ++i)
     {
-        this->alpha[i]. resize (this->input_dim + this->bias, learning_rate_init);
-        this->DeltaW[i]. resize (this->input_dim + this->bias, 0.0);
+        //this->alpha[i]. resize (this->input_dim + this->bias, learning_rate_init);
+        //this->DeltaW[i]. resize (this->input_dim + this->bias, 0.0);
         this->changeW[i]. resize (this->input_dim + this->bias, 0.0);
         //this->W[i] =  random_vector (this->input_dim + this->bias);
         double variance = double(input_dim + n_neurons + bias) / 2.0;
@@ -193,48 +193,45 @@ void Dense::computeErrors(const tensorD & nextErrors)
 /***********************************/
 void Dense::updateWeights (unsigned numb_iter,  unsigned batch_size)
 {
-    double momentum (0.9);
+    double eps = 1e-8;
 
-    // compute the mean of changes of weight
-    matrix_dot (changeW, 1.0 / double (batch_size));
+    const float bc1 = 1.0f - std::pow(this->beta_1, numb_iter + 1);
+    const float bc2 = 1.0f - std::pow(this->beta_2, numb_iter + 1);
 
-
-    // apply momentum
-    matrix_dot (changeW, double (1 - momentum));
-    matrix_dot (DeltaW, momentum);
-    DeltaW = matrix_sum (DeltaW, changeW);
-
-    for (unsigned j = 0; j < this->n_neurons; ++j)
-    {
-        for (unsigned i = 0; i < input_dim + bias; ++i)
-        {
-            W[j][i] -= alpha[j][i]  * DeltaW[j][i];
-            // initialize changes of weights
-            changeW[j][i] = 0;
-        }
-     }
-
-    // update learning rate
     if (algo == "adam")
     {
         for (unsigned j = 0; j < this->n_neurons; ++j)
         {
              for (unsigned i = 0; i < input_dim + bias; ++i)
                 {
-                    //Rcpp::Rcout <<numb_iter << "   " <<  this->M[j][i] << "   " <<  this->W[j][i] << endl;
-                    this->M[j][i] = (this->beta_1 * this->M[j][i]) + ((1 - this->beta_1) * this->DeltaW[j][i]) ;
-                    this->V[j][i] = (this->beta_2 * this->V[j][i]) + ((1 - this->beta_2) * this->DeltaW[j][i] * this->DeltaW[j][i]) ;
+                    const double g = this->changeW[j][i] / batch_size;
 
-                    double m_hat = this->M[j][i]   / (1.0 - double (pow (this->beta_1, numb_iter + 1)));
-                    double v_hat = this->V[j][i]  / (1.0 - double (pow (this->beta_2, numb_iter + 1)));
+                    //Rcpp::Rcout <<numb_iter << "   " <<  this->M[j][i] << "   " <<  this->V[j][i] << "  " << g << endl;
+                    this->M[j][i] = (beta_1 * M[j][i]) + ((1 - beta_1) * g) ;
+                    this->V[j][i] = (beta_2 * V[j][i]) + ((1 - beta_2) * g * g) ;
 
-                    double delta_alpha = (0.001 * m_hat) / (sqrt (v_hat) + 0.00000001);
+                    double m_hat = this->M[j][i]   / (bc1);
+                    double v_hat = this->V[j][i]  / (bc2);
 
-                    // Making sure that the adapted learning rate shouldn't be less that 0.00001 and sould not be greater that initial rate
-                    if ((this->alpha[j][i] - delta_alpha) >= 0.00001 and ((this->alpha[j][i] - delta_alpha) <= learning_rate_init))
-                        this->alpha[j][i] -= delta_alpha;
+                    double delta_alpha = m_hat / (sqrt (v_hat) + eps);
+
+                    W[j][i] = W[j][i] - delta_alpha  * learning_rate_init;
+
+                    changeW[j][i] = 0;
                 }
           }
+    }
+    else
+    {
+        for (unsigned j = 0; j < this->n_neurons; ++j)
+        {
+            for (unsigned i = 0; i < input_dim + bias; ++i)
+            {
+                W[j][i] = W[j][i] - (learning_rate_init  * changeW[j][i]  / batch_size);
+                // initialize changes of weights
+                changeW[j][i] = 0;
+            }
+         }
     }
 }
 

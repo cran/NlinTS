@@ -170,7 +170,7 @@ void Network::train(const MatD &X, const MatD &y, unsigned numb_iter, unsigned b
 
         if ((i % batch_size) == 0 or i == X. size () - 1)
         {
-            updateWeight (numb_iter, batch_size);
+            updateWeight (numb_iter*y.size() + i, batch_size);
         }
     }
 }
