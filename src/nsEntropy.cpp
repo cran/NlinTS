@@ -19,7 +19,7 @@ double myLOG (double x, std::string log)
 	return 0;
 
   if (log == "loge")
-    return (log2 (x) / log2(EXP));
+    return (std::log (x)); //return (log2 (x) / log2(EXP));
   else if (log == "log10")
     return (log2 (x) / log2(10));
   else if (log == "log2")
@@ -370,7 +370,7 @@ double nsEntropy::transferEntropy (const VectInt & X, const VectInt & Y, int p, 
 	{
       VectD min_max = minMax (X);
       double H0 = myLOG (abs (min_max[1] - min_max[0]) , log);
-      
+
       if (H0 != 0)
       	te = te / H0;
   	}
@@ -531,12 +531,13 @@ double nsEntropy::mutualInformation (const MatD & M, int k, string alg, bool nor
   // Normalizing mutual information by divide it by the joint entropy
   if (normalize)
   {
-    double jointEn = 0;
+    double sum_log = 0;
     for (double d: distances)
-      jointEn += d;
-    jointEn *= (2.0 / distances. size ());
-    jointEn +=  digamma (N) - digamma (k);
+        sum_log += myLOG(2.0*d);
+    double avg_log = sum_log / distances.size();
+    double jointEn = avg_log + digamma(N) - digamma(k);
     mi = mi / jointEn;
+
   }
 	return mi;
 }
@@ -576,7 +577,7 @@ double nsEntropy::transferEntropy (const VectD & X, const VectD & Y, int p, int 
 		}
 
 	//  distances from k neighbors of the join matrix Xp  (Xcurrent + Xpassed + Ypassed)
-	VectD distances = kNearest (XmYm, k);
+	VectD distances = kNearest (XpYm, k);
 
 	// we count the number of local points relative to  the marginal matrices
 	NXmYm = computeNbOfNeighbors (XmYm, distances);
@@ -589,7 +590,7 @@ double nsEntropy::transferEntropy (const VectD & X, const VectD & Y, int p, int 
 
 	te = digamma (k) + (sum / N) ;
 
-	
+
 	// Compute  NTE <- TE / (H0 - H(Xp|Xm,Ym))
 	if (normalize == true)
 	{
@@ -651,16 +652,14 @@ double nsEntropy::transferEntropy_ksg (const VectD & X, const VectD & Y, int p, 
 
 	// We countthe number of points within the hyper-rectangle equal to the Cartesian prod of  XmYm, Xp and Xm
 	NXmYm = nbOfNeighborsInRectangle (XpYm, Xm, Ym, distances);
-	NXpYm = nbOfNeighborsInRectangle (XpYm, Xp, Xm, distances);
-	NXm = nbOfNeighborsInRectangle (XpYm, Xm, Xm, distances);
+	NXpYm = nbOfNeighborsInRectangle (XpYm, Xp, Ym, distances);
+	NXm   = nbOfNeighborsInRectangle (XpYm, Xm, Xm, distances);
 	//NXm = computeNbOfNeighbors (Xm, distances, true);
 
 	for (unsigned i = 0; i < N; i ++)
 		sum += digamma (NXm[i]) - digamma (NXmYm[i]) - digamma (NXpYm[i]) + (1 / NXpYm[i]) + (1 / NXmYm[i]);
 
-
 	te = digamma (k) - (2 / k) + sum / N; // - (lag * epsilon / N);
-
 
 	return te;
 }

@@ -13,7 +13,7 @@ mi_cont(X, Y, k = 3, algo = "ksg1", normalize = FALSE)
 
 \item{k}{Integer argument, the number of neighbors.}
 
-\item{algo}{String argument specifies the algorithm use ("ksg1", "ksg2"), as tow propositions of Kraskov estimation are provided. The first one ("ksg1") is used by default.}
+\item{algo}{A string specifying the Kraskov estimation variant: "ksg1" (default) or "ksg2". These represent the two estimators proposed by Kraskov et al. for mutual information estimation.}
 
 \item{normalize}{Logical argument (FALSE by default)  for the option of normalizing the mutual information by dividing it by the joint entropy.}
 }

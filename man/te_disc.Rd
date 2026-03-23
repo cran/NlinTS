@@ -11,13 +11,13 @@ te_disc(X, Y, p = 1, q = 1, log = "log2", normalize = FALSE)
 
 \item{Y}{Integer vector, the second time series.}
 
-\item{p}{Integer, the lag parameter to use for the first vector (p = 1 by default).}
+\item{p}{An integer specifying the lag order for the first vector (defaults to 1).}
 
-\item{q}{Integer, the lag parameter to use for the first vector (q = 1 by default)..}
+\item{q}{An integer specifying the lag order for the second vector (defaults to 1).}
 
-\item{log}{String argument in the set ("log2", "loge","log10"), which indicates the log function to use. The log2 is used by default.}
+\item{log}{A string specifying the logarithm base for entropy calculation: "log2" (default), "loge", or "log10".}
 
-\item{normalize}{Logical argument  for the option of normalizing the value of TE (transfer entropy) (FALSE by default).
+\item{normalize}{Logical argument  for the option of normalizing the transfer entropy (FALSE by default).
 This normalization is done by deviding TE by H (X(t)| X(t-1), ..., X(t-p)), where H is the Shanon entropy.}
 }
 \description{

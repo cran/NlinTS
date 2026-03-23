@@ -9,9 +9,9 @@ entropy_cont(V, k = 3, log = "loge")
 \arguments{
 \item{V}{Interger vector.}
 
-\item{k}{Integer argument, the number of neighbors.}
+\item{k}{Integer argument specifying the number of neighbors.}
 
-\item{log}{String argument in the set ("log2", "loge","log10"), which indicates the log function to use. The loge is used by default.}
+\item{log}{A string specifying the logarithm base: "log2", "loge" (default), or "log10".}
 }
 \description{
 Continuous  entropy

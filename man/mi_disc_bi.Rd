@@ -11,7 +11,7 @@ mi_disc_bi(X, Y, log = "log2", normalize = FALSE)
 
 \item{Y}{Integer vector.}
 
-\item{log}{String argument in the set ("log2", "loge","log10"), which indicates the log function to use. The log2 is used by default.}
+\item{log}{A string specifying the logarithm base for entropy calculation: "log2" (default), "loge", or "log10".}
 
 \item{normalize}{Logical argument (FALSE by default)  for the option of normalizing the mutual information by dividing it by the joint entropy.}
 }

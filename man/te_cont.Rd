@@ -11,9 +11,9 @@ te_cont(X, Y, p = 1, q = 1, k = 3, normalize = FALSE)
 
 \item{Y}{Integer vector, the second time series.}
 
-\item{p}{Integer, the lag parameter to use for the first vector, (p = 1 by default).}
+\item{p}{An integer specifying the lag order for the first vector (defaults to 1).}
 
-\item{q}{Integer the lag parameter to use for the first vector, (q = 1 by default).}
+\item{q}{An integer specifying the lag order for the second vector (defaults to 1).}
 
 \item{k}{Integer argument, the number of neighbors.}
 

@@ -33,11 +33,11 @@ nlin_causality.test(
 
 \item{iters}{The number of iterations.}
 
-\item{learningRate}{The learning rate to use, O.1 by default, and if Adam algorithm is used, then it is the initial learning rate.}
+\item{learningRate}{The default learning rate is set to 0.1; when utilizing the Adam optimizer, this value serves as the initial learning rate.}
 
-\item{algo}{String argument, for the optimisation algorithm to use, in choice ["sgd", "adam"]. By default "sgd" (stochastic gradient descent) is used. The algorithm 'adam' is to adapt the learning rate while using "sgd".}
+\item{algo}{String argument, Optimizer: Choose between sgd (Stochastic Gradient Descent) and adam. The default is sgd. While sgd uses a fixed learning rate, adam provides adaptive learning rates by tracking the first and second moments of the gradients.}
 
-\item{batch_size}{Integer argument for the batch size used in the back-propagation algorithm.}
+\item{batch_size}{An integer specifying the number of samples processed before the model's internal parameters are updated during backpropagation.}
 
 \item{bias}{Logical argument  for the option of using the bias in the networks.}
 

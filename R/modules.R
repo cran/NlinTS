@@ -15,20 +15,20 @@ library (Rdpack)
 
 #' Artificial Neural Network VAR (Vector Auto-Regressive) model using a MultiLayer Perceptron, with the sigmoid activation function. The optimization algorithm is based on the stochastic gradient descent.
 #'
-#' @details This function builds the model, and returns an object that can be used to make forecasts and can be updated from new data.
+#' @details Constructs the model and returns a model object. The resulting object is designed for generating forecasts and supports incremental updates as new data becomes available.
 #' @param df A numerical dataframe
 #' @param sizeOfHLayers Integer vector that contains the size of hidden layers, where the length of this vector is the number of hidden layers, and the i-th element is the number of neurons in the i-th hidden layer.
 #' @param lag The lag parameter.
 #' @param iters The number of iterations.
 #' @param learningRate The learning rate to use, O.1 by default, and if Adam algorithm is used, then it is the initial learning rate.
-#' @param algo String argument, for the optimisation algorithm to use, in choice ["sgd", "adam"]. By default "sgd" (stochastic gradient descent) is used. The algorithm 'adam' is to adapt the learning rate while using "sgd".
-#' @param batch_size Integer argument for the batch size used in the back-propagation algorithm.
+#' @param algo A string specifying the optimization algorithm: "sgd" (default) or "adam".
+#' @param batch_size An integer specifying the number of samples processed before the model's internal parameters are updated during backpropagation.
 #' @param bias Logical, true if the bias have to be used in the network.
-#' @param seed Integer value for the seed used in the random generation of the weights of the network (a value = 0 will use the clock as random generator seed).
+#' @param seed An integer to initialize the random number generator for weight initialization. Setting seed = 0 uses the system clock for a non-deterministic seed.
 #' @param activations String vector for the activations functions to use (in choice ["sigmoid", "relu", "tanh"]). The length of this vector is the number of hidden layers plus one (the output layer). By default, the relu activation function is used in hidden layers, and the sigmoid in the last layer.
 
-#' @return fit (df, iterations, batch_size):  fit/update the weights of the model from  the dataframe.
-#' @return forecast (df):   makes forecasts of an given dataframe. The forecasts include the forecasted row based on each previous "lag" rows, where the last one is the next forecasted row of  df.
+#' @return fit (df, iterations, batch_size): fit/update the weights of the model from  the dataframe df.
+#' @return forecast (df): A dataframe containing the model's predictions. Each row is forecasted based on the preceding "p" (lag) observations, with the final row representing the out-of-sample forecast for the period immediately following the input data.
 #' @return save (filename): save the model in a text file.
 #' @return load (filename): load the model from a text file.
 #' @examples
@@ -88,9 +88,9 @@ causality.test <- function(ts1,ts2, lag, diff = FALSE){
 #' @param LayersUniv Integer vector that contains the size of hidden layers of the univariate model. The length of this vector is the number of hidden layers, and the i-th element is the number of neurons in the i-th hidden layer.
 #' @param LayersBiv Integer vector that contains the size of hidden layers of the bivariate model. The length of this vector is the number of hidden layers, and the i-th element is the number of neurons in the i-th hidden layer.
 #' @param iters The number of iterations.
-#' @param learningRate The learning rate to use, O.1 by default, and if Adam algorithm is used, then it is the initial learning rate.
-#' @param algo String argument, for the optimisation algorithm to use, in choice ["sgd", "adam"]. By default "sgd" (stochastic gradient descent) is used. The algorithm 'adam' is to adapt the learning rate while using "sgd".
-#' @param batch_size Integer argument for the batch size used in the back-propagation algorithm.
+#' @param learningRate The default learning rate is set to 0.1; when utilizing the Adam optimizer, this value serves as the initial learning rate.
+#' @param algo String argument, Optimizer: Choose between sgd (Stochastic Gradient Descent) and adam. The default is sgd. While sgd uses a fixed learning rate, adam provides adaptive learning rates by tracking the first and second moments of the gradients.
+#' @param batch_size An integer specifying the number of samples processed before the model's internal parameters are updated during backpropagation.
 #' @param bias Logical argument  for the option of using the bias in the networks.
 #' @param seed Integer value for the random seed used in the random generation of the weights of the network (a value = 0 will use the clock as random generator seed).
 #' @param activationsUniv String vector for the activations functions to use (in choice ["sigmoid", "relu", "tanh"]) for the univariate model. The length of this vector is the number of hidden layers plus one (the output layer). By default, the relu activation function is used in hidden layers, and the sigmoid in the last layer.
@@ -147,7 +147,7 @@ df.test <- function(ts, lag){
 #'
 #' @details Computes the Shanon entropy of an integer vector.
 #' @param V Integer vector.
-#' @param log String argument in the set ("log2", "loge","log10"), which indicates the log function to use. The log2 is used by default.
+#' @param log A string specifying the logarithm base for entropy calculation: "log2" (default), "loge", or "log10".
 #' @importFrom Rdpack reprompt
 #' @examples
 #' library (NlinTS)
@@ -165,7 +165,7 @@ entropy_disc <- function (V, log = "log2")
 #' @details Computes the Mutual Information between two integer vectors.
 #' @param X Integer vector.
 #' @param Y Integer vector.
-#' @param log String argument in the set ("log2", "loge","log10"), which indicates the log function to use. The log2 is used by default.
+#' @param log A string specifying the logarithm base for entropy calculation: "log2" (default), "loge", or "log10".
 #' @param normalize Logical argument (FALSE by default)  for the option of normalizing the mutual information by dividing it by the joint entropy.
 #' @examples
 #' library (NlinTS)
@@ -183,7 +183,7 @@ mi_disc_bi <- function (X, Y, log = "log2", normalize = FALSE)
 #'
 #' @details Computes the Mutual Information between columns of a dataframe.
 #' @param df  Datafame of type Integer.
-#' @param log String argument in the set ("log2", "loge","log10"), which indicates the log function to use. The log2 is used by default.
+#' @param log A string specifying the logarithm base for entropy calculation: "log2" (default), "loge", or "log10".
 #' @param normalize Logical argument (FALSE by default)  for the option of normalizing the mutual information by dividing it by the joint entropy.
 #' @examples
 #' library (NlinTS)
@@ -204,10 +204,10 @@ mi_disc <- function (df, log = "log2", normalize = FALSE)
 #' @details Computes the Transfer Entropy from the second time series to the first one.
 #' @param X Integer vector, first time series.
 #' @param Y Integer vector, the second time series.
-#' @param p Integer, the lag parameter to use for the first vector (p = 1 by default).
-#' @param q Integer, the lag parameter to use for the first vector (q = 1 by default)..
-#' @param log String argument in the set ("log2", "loge","log10"), which indicates the log function to use. The log2 is used by default.
-#' @param normalize Logical argument  for the option of normalizing the value of TE (transfer entropy) (FALSE by default).
+#' @param p An integer specifying the lag order for the first vector (defaults to 1).
+#' @param q An integer specifying the lag order for the second vector (defaults to 1).
+#' @param log A string specifying the logarithm base for entropy calculation: "log2" (default), "loge", or "log10".
+#' @param normalize Logical argument  for the option of normalizing the transfer entropy (FALSE by default).
 #' This normalization is done by deviding TE by H (X(t)| X(t-1), ..., X(t-p)), where H is the Shanon entropy.
 #' @references{
 #'   \insertRef{schreiber2000}{NlinTS}
@@ -228,8 +228,8 @@ te_disc <- function (X, Y, p = 1, q = 1, log = "log2", normalize = FALSE)
 #'
 #' @details Computes the continuous entropy of a numerical vector using the Kozachenko approximation.
 #' @param V  Interger vector.
-#' @param k  Integer argument, the number of neighbors.
-#' @param log String argument in the set ("log2", "loge","log10"), which indicates the log function to use. The loge is used by default.
+#' @param k  Integer argument specifying the number of neighbors.
+#' @param log A string specifying the logarithm base: "log2", "loge" (default), or "log10".
 #' @references{
 #'   \insertRef{kraskov2004estimating}{NlinTS}
 #' }
@@ -254,7 +254,7 @@ te_disc <- function (X, Y, p = 1, q = 1, log = "log2", normalize = FALSE)
 #' @param X Integer vector, first time series.
 #' @param Y Integer vector, the second time series.
 #' @param k  Integer argument, the number of neighbors.
-#' @param algo String argument specifies the algorithm use ("ksg1", "ksg2"), as tow propositions of Kraskov estimation are provided. The first one ("ksg1") is used by default.
+#' @param algo A string specifying the Kraskov estimation variant: "ksg1" (default) or "ksg2". These represent the two estimators proposed by Kraskov et al. for mutual information estimation.
 #' @param normalize Logical argument (FALSE by default)  for the option of normalizing the mutual information by dividing it by the joint entropy.
 #' @references{
 #'   \insertRef{kraskov2004estimating}{NlinTS}
@@ -281,8 +281,8 @@ te_disc <- function (X, Y, p = 1, q = 1, log = "log2", normalize = FALSE)
 #' @details Computes the continuous Transfer Entropy from the second time series to the first one using the Kraskov estimation
 #' @param X Integer vector, first time series.
 #' @param Y Integer vector, the second time series.
-#' @param p Integer, the lag parameter to use for the first vector, (p = 1 by default).
-#' @param q Integer the lag parameter to use for the first vector, (q = 1 by default).
+#' @param p An integer specifying the lag order for the first vector (defaults to 1).
+#' @param q An integer specifying the lag order for the second vector (defaults to 1).
 #' @param k  Integer argument, the number of neighbors.
 #' @param normalize Logical argument  for the option of normalizing value of TE (transfer entropy) (FALSE by default).
 #' This normalization is different from the discrete case, because, here the term H (X(t)| X(t-1), ..., X(t-p)) may be negative.

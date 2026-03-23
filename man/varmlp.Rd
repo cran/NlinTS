@@ -28,20 +28,20 @@ varmlp(
 
 \item{learningRate}{The learning rate to use, O.1 by default, and if Adam algorithm is used, then it is the initial learning rate.}
 
-\item{algo}{String argument, for the optimisation algorithm to use, in choice ["sgd", "adam"]. By default "sgd" (stochastic gradient descent) is used. The algorithm 'adam' is to adapt the learning rate while using "sgd".}
+\item{algo}{A string specifying the optimization algorithm: "sgd" (default) or "adam".}
 
-\item{batch_size}{Integer argument for the batch size used in the back-propagation algorithm.}
+\item{batch_size}{An integer specifying the number of samples processed before the model's internal parameters are updated during backpropagation.}
 
 \item{bias}{Logical, true if the bias have to be used in the network.}
 
-\item{seed}{Integer value for the seed used in the random generation of the weights of the network (a value = 0 will use the clock as random generator seed).}
+\item{seed}{An integer to initialize the random number generator for weight initialization. Setting seed = 0 uses the system clock for a non-deterministic seed.}
 
 \item{activations}{String vector for the activations functions to use (in choice ["sigmoid", "relu", "tanh"]). The length of this vector is the number of hidden layers plus one (the output layer). By default, the relu activation function is used in hidden layers, and the sigmoid in the last layer.}
 }
 \value{
-fit (df, iterations, batch_size):  fit/update the weights of the model from  the dataframe.
+fit (df, iterations, batch_size): fit/update the weights of the model from  the dataframe df.
 
-forecast (df):   makes forecasts of an given dataframe. The forecasts include the forecasted row based on each previous "lag" rows, where the last one is the next forecasted row of  df.
+forecast (df): A dataframe containing the model's predictions. Each row is forecasted based on the preceding "p" (lag) observations, with the final row representing the out-of-sample forecast for the period immediately following the input data.
 
 save (filename): save the model in a text file.
 
@@ -51,7 +51,7 @@ load (filename): load the model from a text file.
 Artificial Neural Network VAR (Vector Auto-Regressive) model using a MultiLayer Perceptron, with the sigmoid activation function. The optimization algorithm is based on the stochastic gradient descent.
 }
 \details{
-This function builds the model, and returns an object that can be used to make forecasts and can be updated from new data.
+Constructs the model and returns a model object. The resulting object is designed for generating forecasts and supports incremental updates as new data becomes available.
 }
 \examples{
 library (timeSeries) # to extract time series

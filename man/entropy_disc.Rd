@@ -9,7 +9,7 @@ entropy_disc(V, log = "log2")
 \arguments{
 \item{V}{Integer vector.}
 
-\item{log}{String argument in the set ("log2", "loge","log10"), which indicates the log function to use. The log2 is used by default.}
+\item{log}{A string specifying the logarithm base for entropy calculation: "log2" (default), "loge", or "log10".}
 }
 \description{
 Discrete Entropy
